@@ -12,18 +12,17 @@
 			};
 			
             x.css = $.extend({
-                treeLeaf: 'tree-leaf'
-				, heading: 'heading'
-				, control: 'control'
-				, status: 'status'
-				, loader: 'loader'
-				, selected: 'selected'
-				, preloader: 'preloader'
-				, hover: 'hover'
+                treeLeaf	: 'tree-leaf',
+				heading		: 'heading',
+				control		: 'control',
+				status		: 'status',
+				loader		: 'loader',
+				selected	: 'selected',
+				preloader	: 'preloader',
+				hover		: 'hover'
 			}, x.css || {});
 			
             
-			
 			var controller = {
 				
 				init: function ( callback ) {

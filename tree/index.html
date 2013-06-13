@@ -26,12 +26,14 @@
 					init: {
 						delay: null,
 						preloader: true,
-						callback: function ( controller ) {
-							// this === tree
+						callback: function ( tree ) {
+							// this === controller
+							debugger;
 						}
 					},
 					
 					preloader: true,
+					root: 'top',
 					
 					css: {
 						foo: 'bar'
