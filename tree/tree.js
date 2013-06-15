@@ -2,11 +2,7 @@
 
 	var e; // for catch(e)
 
-	var STRINGS = {
-		undefLeafLoader : 'Tree leaf loader is not a function.'
-	};
-
-	var log = function (str, obj) {
+	const log = function (str, obj) {
 		if (console && console.log) {
 			if (obj) {
 				console.log(obj, str);
@@ -16,15 +12,20 @@
 		}
 	};
 
+	var STRINGS = {
+		undefLeafLoader : 'Tree leaf loader is not a function.'
+	};
+
 	var DEFAULTS = {
 
 		init : {
 
 			delay : null,
-			preloader : true,
-
+			// no preloader className == no preloader
+			preloader : 'preloader',
 			// function (controller, tree)
-			callback : null
+			callback : null,
+			method : 'fadeIn'
 
 		},
 
@@ -33,7 +34,11 @@
 		// where callback will receive leafObject
 		loader : null,
 
-		animate : 500,
+		animate : {
+			delay : 500,
+			open : 'slideDown',
+			close : 'slideUp'
+		},
 
 		callbacks : null,
 		handlers : null,
@@ -44,13 +49,14 @@
 			root : 'tree_root',
 
 			control : 'tree_control',
+			folder : 'folder',
 			text : 'tree_leaf_text',
 
 			selected : 'selected',
 			hover : 'hover',
 
 			loader : 'loader',
-			preloader : 'preloader'
+			open : 'open'
 
 		},
 		html : {
@@ -62,7 +68,12 @@
 			control : '<SPAN>',
 			text : '<SPAN>',
 
-		}
+		},
+		control : {
+			close : '+',
+			open : '&ndash;'
+		},
+		storeLoaded : true
 
 	};
 
@@ -75,6 +86,9 @@
 				parent : null,
 				name : null,
 				text : null,
+
+				folder : true,
+				open : true,
 
 				children : {},
 				items : []
@@ -94,13 +108,7 @@
 				}
 			});
 
-			var cls = function (name) {
-				if (x.cls[name]) {
-					return x.theme + '_' + x.cls[name];
-				}
-			};
-
-			var loadLeaf = function (path, callback) {
+			var loader = function (path, callback) {
 				if ($.isFunction(x.loader)) {
 					x.loader(path, callback);
 				} else {
@@ -108,31 +116,91 @@
 				}
 			};
 
+			var loadLeaf = function (leaf, callback) {
+				if (leaf.folder && leaf.open) {
+					x.cls.loader && (leaf.els.text.addClass(x.cls.loader));
+					loader(getPath(leaf), function (obj) {
+						parseChildren(leaf, obj, function (leaf) {
+							x.cls.loader && (leaf.els.text.removeClass(x.cls.loader));
+							callback && callback(leaf, tree, controller);
+						});
+					});
+				}
+			};
+
+			var getPath = function (leaf) {
+				var arr = [leaf.name];
+				var el = leaf.parent;
+				while (el.parent !== null) {
+					arr.unshift(el.name);
+					el = el.parent;
+				};
+				arr.unshift(x.root);
+				return arr;
+			};
+
 			var makeEl = function (type, html) {
 				var el = $(x.html[type] || type);
-				var css = cls(type);
-				css && el.addClass(css);
+				x.cls[type] && el.addClass(x.cls[type]);
 				html && el.html(html);
 				return el;
 			};
 
-			var makeLeaf = function (obj) {
-				var els = obj.els = {
+			var setControlHtml = function (leaf) {
+				leaf.els.control.html(leaf.open ? x.control.open : x.control.close);
+			};
+
+			var setControl = function (leaf) {
+				var control = leaf.els.control;
+			};
+
+			var makeLeaf = function (leaf) {
+				var els = leaf.els = {
 					control : makeEl('control'),
-					text : makeEl('text', obj.text)
+					text : makeEl('text', leaf.text),
+					children : makeEl('children')
 				};
-				obj.container = makeEl('leaf').append(els.control, els.text);
-				obj.container.appendTo(obj.parent.container);
+				setControlHtml(leaf);
+				if (leaf.folder) {
+					els.control.addClass(x.cls.folder);
+					els.control.on('click', function (evt) {
+						leaf.open = !leaf.open;
+						if (leaf.open) {
+							if (x.storeLoaded && (leaf.items.length > 0)) {
+								leaf.els.children[x.animate.open](x.animate.delay, function () {
+									setControlHtml(leaf);
+								});
+							} else {
+								loadLeaf(leaf, function (leaf) {
+									setControlHtml(leaf);
+									// todo: scroll leaf into view...
+								});
+							}
+						} else {
+							leaf.els.children[x.animate.close](x.animate.delay, function () {
+								setControlHtml(leaf);
+							});
+						}
+					});
+				}
+				leaf.container = makeEl('leaf').append(els.control, els.text, els.children);
+				leaf.container.appendTo(leaf.parent.els.children);
 			};
 
 			var parseChildren = function (leaf, obj, callback) {
 
-				leaf.container.hide();
-				leaf.container.empty();
+				leaf.children = {};
+				leaf.items = [];
+				leaf.els.children.hide();
+				leaf.els.children.empty();
 
 				$.each(obj, function (name, value) {
 
-					var el = value;
+					var el = $.extend({
+							folder : false,
+							// undefined || null || false
+							open : (!value.folder) ? true : false
+						}, value);
 
 					el.parent = leaf;
 					el.name = name;
@@ -146,11 +214,13 @@
 					leaf.children[name] = el;
 					leaf.items.push(el);
 
+					loadLeaf(el);
+
 				});
 
-				var method = (leaf.parent == null) ? 'fadeIn' : 'slideDown';
+				var method = (leaf.parent == null) ? x.init.method : x.animate.open;
 
-				leaf.container[method](x.animate, function () {
+				leaf.els.children[method](x.animate.delay, function () {
 					callback && callback(leaf, controller, tree);
 				});
 
@@ -162,17 +232,14 @@
 
 					x.container.empty();
 
-					if (x.init.preloader) {
-						x.container.addClass(x.cls.preloader);
-					}
+					x.init.preloader && (x.container.addClass(x.init.preloader));
 
-					loadLeaf(x.root, function (obj) {
+					loader([x.root], function (obj) {
 
-						if (x.init.preloader) {
-							x.container.removeClass(x.cls.preloader);
-						}
+						x.init.preloader && (x.container.removeClass(x.init.preloader));
 
-						tree.container = $(x.html.tree).addClass(cls('root'));
+						tree.els = {};
+						tree.container = tree.els.children = $(x.html.tree).addClass(x.theme + '_' + x.cls.root);
 						x.container.html(tree.container);
 
 						parseChildren(tree, obj, function (leaf) {

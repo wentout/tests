@@ -2,28 +2,36 @@
 	background-image: url("loader-circle.gif");
     background-repeat: no-repeat;
 }
-
 ul.custom_tree_root {
 	margin: 0px;
-	padding: 1px 2px 0px 11px;
+	padding: 0px 2px 0px 2px;
+	font-size: 12px;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	border: 1px solid red;
+}
+ul.custom_tree_root ul {
+	margin: 0px;
+	padding: 0px 0px 0px 17px;
 }
 ul.custom_tree_root li {
 	list-style-type: none;
 	display: block;
 	margin: 0px;
-	padding: 2px 1px 2px 3px;
-}
-ul.custom_tree_root li span.status{
+	padding: 2px 0px 2px 0px;
 }
 ul.custom_tree_root li span.tree_control{
-	cursor: pointer;
-	margin: 0px 7px 0px 3px;
+	width: 11px;
+	margin: 0px 5px 0px 3px;
 	padding: 0px 1px 0px 1px;
-	display: inline-block;
+}
+ul.custom_tree_root li span.tree_control.folder{
+	cursor: pointer;
 }
 ul.custom_tree_root li span.tree_leaf_text{
 	cursor: pointer;
-	padding: 2px 8px 2px 8px;
+	padding: 2px 8px 2px 3px;
 	-moz-border-radius: 4px; 
 	-webkit-border-radius: 4px; 
 	-khtml-border-radius: 4px; 
