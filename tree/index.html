@@ -13,37 +13,11 @@
 	
 	<h1>Tree View Example</h1>
 	<div id = "container">
-		<div id = "tree_content" style = "position: relative; display: block; overflow: auto">
+		<div id = "tree_content">
 		</div>
 		<textarea id = "debug" cols = "50" rows = "30"></textarea >
 	</div>
-	<script language = "JavaScript" type = "text/javascript" charset = "utf-8">
-		$(function(){
-			try {
-				
-				$('#tree_content').customTree( {
-					
-					init: {
-						delay: null,
-						preloader: true,
-						callback: function ( tree ) {
-							// this === controller
-							debugger;
-						}
-					},
-					
-					preloader: true,
-					root: 'top',
-					
-					css: {
-						foo: 'bar'
-					}
-					
-				} );
-				
-			} catch (e) { alert (e); }
-		}); //.hide().fadeIn( 1000 );
-		</script>
+	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./starter.js"></script>
 	
 </body>
 </html>
