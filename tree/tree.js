@@ -82,7 +82,7 @@
 		},
 		storeLoaded : true,
 		selectParentOnClose : false,
-		selectByDblClick: false,
+		selectByDblClick : false,
 
 		labelsBreak : {
 			by : 0,
@@ -352,17 +352,19 @@
 				// handle(leaf, 'deleted');
 				// });
 
-				var oldClean = jQuery.cleanData;
-				$.cleanData = function (elems) {
-					for (var i = 0, elem; (elem = elems[i]) !== undefined; i++) {
-						$(elem).triggerHandler("deleted");
-					}
-					oldClean(elems);
-				};
-
-				(leaf.els && leaf.els.children) && leaf.els.children.empty();
-
-				$.cleanData = oldClean;
+				if (x.handlers.deleted) {
+					var oldClean = jQuery.cleanData;
+					$.cleanData = function (elems) {
+						for (var i = 0, elem; (elem = elems[i]) !== undefined; i++) {
+							$(elem).triggerHandler("deleted");
+						}
+						oldClean(elems);
+					};
+					(leaf.els && leaf.els.children) && leaf.els.children.empty();
+					$.cleanData = oldClean;
+				} else {
+					(leaf.els && leaf.els.children) && leaf.els.children.empty();
+				}
 
 				leaf.children = {};
 				leaf.items = [];
