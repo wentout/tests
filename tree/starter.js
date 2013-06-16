@@ -59,17 +59,21 @@ $(function () {
 				},
 				deleted : function (leaf, controller, tree) {
 					info('Deleted [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
+				},
+				dblclick : function (leaf, controller, tree) {
+					info('Dblclick [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
 				}
 			},
 
 			listeners : {
-				// click, contextmenu, doubleclick up the element Label
-				unload : function () {
-					debugger;
+				// click, contextmenu up the element Label
+				contextmenu : function (leaf, controller, tree, event) {
+					// debugger;
 				}
 			},
 
 			// selectParentOnClose : true,
+			// selectByDblClick: true,
 			storeLoaded : false,
 			labelsBreak : {
 				by : 50

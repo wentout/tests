@@ -54,6 +54,8 @@
 			selected : 'selected',
 			hover : 'hover',
 
+			supressLabelTextSelection : 'unselectable',
+
 			loader : 'loader',
 			open : 'open',
 
@@ -80,6 +82,7 @@
 		},
 		storeLoaded : true,
 		selectParentOnClose : false,
+		selectByDblClick: false,
 
 		labelsBreak : {
 			by : 0,
@@ -256,6 +259,14 @@
 				});
 			};
 
+			var selectLeaf = function (leaf) {
+				if (leaf !== x.current) {
+					blur(function () {
+						focus(leaf);
+					});
+				}
+			};
+
 			var makeLeaf = function (leaf) {
 				var els = leaf.els = {
 					control : makeEl('control'),
@@ -263,6 +274,9 @@
 					text : makeEl('text', leaf.text),
 					children : makeEl('children')
 				};
+
+				x.cls.supressLabelTextSelection && els.text.addClass(x.cls.supressLabelTextSelection);
+
 				setControlHtml(leaf);
 				if (leaf.folder) {
 					els.control.addClass(x.cls.folder);
@@ -298,10 +312,7 @@
 				});
 				leaf.els.text.on('click', function (ev) {
 					ev.stopPropagation();
-					var el = leaf.els.text;
-					blur(function () {
-						focus(leaf);
-					});
+					!x.selectByDblClick && selectLeaf(leaf);
 				});
 				leaf.els.text.on('deleted', function (ev) {
 					handle(leaf, 'deleted');
@@ -311,9 +322,21 @@
 				// handle(leaf, 'deleted');
 				// }, true);
 
+				leaf.els.text.dblclick(function (ev) {
+					x.selectByDblClick && selectLeaf(leaf);
+					if (x.handlers) {
+						if (x.handlers.dblclick) {
+							x.handlers.dblclick(leaf, controller, tree, ev);
+						}
+					}
+				});
 				if (x.listeners) {
-					$.each(x.listeners, function (name, value) {
-						leaf.els.text.on(name, value);
+					$.each(x.listeners, function (name, listener) {
+						leaf.els.text.on(name, function () {
+							var args = Array.prototype.slice.call(arguments);
+							args.unshift(leaf, controller, tree);
+							listener.apply(leaf, args);
+						});
 					});
 				}
 				// leaf.container = makeEl('leaf').append(els.control, els.status, els.text, els.children);
