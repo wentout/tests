@@ -50,9 +50,9 @@ $(function () {
 				focus : function (leaf, controller, tree) {
 					info('Focus [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
 				},
-				beforeblur : function (leaf, controller, tree) {
+				beforeblur : function (callback, leaf, controller, tree) {
 					info('Beforeblur [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
-					return true;
+					callback && callback();
 				},
 				blur : function (leaf, controller, tree) {
 					info('Blur [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);

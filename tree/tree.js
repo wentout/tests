@@ -138,9 +138,11 @@
 				}
 			});
 
-			var handle = function (leaf, type) {
+			var handle = function (leaf, type, callback) {
 				if (x.handlers[type]) {
-					return x.handlers[type](leaf, controller, tree);
+					var arr = [leaf, controller, tree];
+					callback && arr.unshift(callback);
+					x.handlers[type].apply(leaf, arr);
 				}
 				return true;
 			};
@@ -202,13 +204,15 @@
 			};
 
 			var blur = function (callback) {
-				if (!x.current.parent || handle(x.current, 'beforeblur')) {
-					if (x.current.parent) {
+				if (x.current.parent) {
+					handle(x.current, 'beforeblur', function () {
 						x.current.els.text.removeClass(x.cls.selected);
 						setTextHtml(x.current);
 						handle(x.current, 'blur');
 						x.current = tree;
-					}
+						callback && callback();
+					});
+				} else {
 					callback && callback();
 				}
 			};
@@ -282,12 +286,10 @@
 					els.control.addClass(x.cls.folder);
 					els.control.on('click', function (ev) {
 						ev.stopPropagation();
-						leaf.open = !leaf.open;
 						if (leaf.open) {
-							openLeaf(leaf);
-						} else {
 							if (blurByParent(leaf)) {
 								blur(function () {
+									leaf.open = !leaf.open;
 									closeLeaf(leaf, function () {
 										if (x.selectParentOnClose) {
 											focus(leaf);
@@ -295,8 +297,12 @@
 									});
 								});
 							} else {
+								leaf.open = !leaf.open;
 								closeLeaf(leaf);
 							}
+						} else {
+							leaf.open = !leaf.open;
+							openLeaf(leaf);
 						}
 					});
 				}
