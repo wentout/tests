@@ -1,12 +1,12 @@
 .preloader{
 	background-image: url("loader-circle.gif");
-    background-repeat: no-repeat;
+	background-repeat: no-repeat;
 }
 .unselectable {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
 }
 div.custom_tree_root_container {
 	overflow: auto;
