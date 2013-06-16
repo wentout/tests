@@ -302,13 +302,15 @@
 					blur(function () {
 						focus(leaf);
 					});
-
 				});
-				
+				leaf.els.text.on('deleted', function (ev) {
+					handle(leaf, 'deleted');
+				});
+
 				// leaf.els.text[0].addEventListener('DOMNodeRemovedFromDocument', function (ev) {
-					// handle(leaf, 'deleted');
+				// handle(leaf, 'deleted');
 				// }, true);
-				
+
 				if (x.listeners) {
 					$.each(x.listeners, function (name, value) {
 						leaf.els.text.on(name, value);
@@ -321,26 +323,27 @@
 			};
 
 			var emptyLeaf = function (leaf, callback) {
-				// if (x.handlers.deleted) {
-				// if (callback) {
+
 				// $.each(leaf.children, function (name, leaf) {
-				// emptyLeaf(leaf, function () {
+				// emptyLeaf(leaf);
 				// handle(leaf, 'deleted');
 				// });
-				// });
-				// callback && callback();
-				// } else {
-				// emptyLeaf(leaf, function () {
-				// (leaf.els && leaf.els.children) && leaf.els.children.empty();
-				// leaf.children = {};
-				// leaf.items = [];
-				// });
-				// }
-				// } else {
+
+				var oldClean = jQuery.cleanData;
+				$.cleanData = function (elems) {
+					for (var i = 0, elem; (elem = elems[i]) !== undefined; i++) {
+						$(elem).triggerHandler("deleted");
+					}
+					oldClean(elems);
+				};
+
 				(leaf.els && leaf.els.children) && leaf.els.children.empty();
+
+				$.cleanData = oldClean;
+
 				leaf.children = {};
 				leaf.items = [];
-				// }
+
 			};
 
 			var parseChildren = function (leaf, obj, callback) {
