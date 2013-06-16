@@ -1,29 +1,85 @@
 $(function () {
 	try {
+
 		var count = 0;
+		var info = function (str) {
+			count++
+			if (str !== undefined) {
+				$('#debug').val($('#debug').val() + count + '. ' + str + '\n');
+			} else {
+				count = 0;
+				$('#debug').html('');
+			}
+			$('#debug')[0].scrollTop = $('#debug')[0].scrollHeight;
+		};
+		info();
+
+		var countRand = 0;
 		$('#tree_content').customTree({
 
 			root : 'top',
 			init : {
 				callback : function (controller, tree) {
-					// debugger;
+					info('Init callback.');
 				}
 			},
 
-			callbacks : {
-				// for leaf callbacks
-				creation : function (leaf, controller, tree) {
+			// for leaf callbacks
+			handlers : {
+				added : function (leaf, controller, tree) {
+					info('Added [' + controller.getPath(leaf) + '] \n   name :' + leaf.text);
+				},
+				loaded : function (leaf, controller, tree) {
+					info('Loaded [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
+				},
+				parsed : function (leaf, controller, tree) {
+					info('Parsed [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
+				},
+				open : function (leaf, controller, tree) {
+					info('Open [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
+				},
+				close : function (leaf, controller, tree) {
+					info('Close [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
+				},
+				hover : function (leaf, controller, tree) {
+					// info('Hover [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
+				},
+				unhover : function (leaf, controller, tree) {
+					// info('Unhover [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
+				},
+				focus : function (leaf, controller, tree) {
+					info('Focus [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
+				},
+				beforeblur : function (leaf, controller, tree) {
+					info('Beforeblur [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
+					return true;
+				},
+				blur : function (leaf, controller, tree) {
+					info('Blur [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
+				},
+				deleted : function (leaf, controller, tree) {
+					info('Deleted [' + controller.getPath(leaf) + '] \n   text :' + leaf.text);
+				}
+			},
+
+			listeners : {
+				// click, contextmenu, doubleclick up the element Label
+				unload : function () {
 					debugger;
 				}
 			},
 
-			handlers : {
-				blur : null
+			// selectParentOnClose : true,
+			storeLoaded : false,
+			labelsBreak : {
+				by : 50
 			},
 
 			loader : function (path, callback) {
 				var obj;
-				switch (JSON.stringify(path)) {
+				var path = JSON.stringify(path);
+				info('Loading : ' + path);
+				switch (path) {
 				case '["top"]':
 					obj = {
 						child1 : {
@@ -53,25 +109,30 @@ $(function () {
 					};
 					break;
 				default:
-					count++;
+					countRand++;
+					var longText = 'child3  child3  child3 child3  child3  child3 child3  child3  child3';
 					obj = {
 						child1 : {
-							folder : true
+							folder : true,
+							text : longText
 						},
 						child2 : {},
-						child3 : {},
+						child3 : {
+							text : longText
+						},
 						child4 : {
 							folder : true
 						},
 						child5 : {}
 					}
 					var el = Math.random() > 0.5 ? 'child4' : 'child1';
-					obj[el].open = count > 5 ? false : true;
+					obj[el].open = countRand > 25 ? false : true;
 				}
 				var val = JSON.stringify(obj);
 				window.setTimeout(function () {
 					callback(JSON.parse(val));
-				}, 1000);
+					// }, 1000);
+				}, 50);
 			}
 
 		});

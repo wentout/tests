@@ -14,12 +14,11 @@ body {
 	border: 1px solid black;
 	float: left;
 	margin: 0px 50px 0px 30px;
-	padding: 5px 15px 5px 15px;
 }
 
 #debug  {
 	border: 1px solid black;
-	height: 450px;
+	height: 440px;
 	width: 450px;
 	padding: 5px 15px 5px 15px;
 }

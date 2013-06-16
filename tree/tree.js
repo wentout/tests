@@ -2,7 +2,7 @@
 
 	var e; // for catch(e)
 
-	const log = function (str, obj) {
+	var log = function (str, obj) {
 		if (console && console.log) {
 			if (obj) {
 				console.log(obj, str);
@@ -12,9 +12,7 @@
 		}
 	};
 
-	var STRINGS = {
-		undefLeafLoader : 'Tree leaf loader is not a function.'
-	};
+	var UNDEFINED_LOADER = 'Tree leaf loader is not a function.';
 
 	var DEFAULTS = {
 
@@ -40,8 +38,8 @@
 			close : 'slideUp'
 		},
 
-		callbacks : null,
 		handlers : null,
+		listeners : null,
 
 		theme : 'custom',
 		cls : {
@@ -49,14 +47,17 @@
 			root : 'tree_root',
 
 			control : 'tree_control',
-			folder : 'folder',
+			status : 'tree_leaf_status',
 			text : 'tree_leaf_text',
 
+			folder : 'folder',
 			selected : 'selected',
 			hover : 'hover',
 
 			loader : 'loader',
-			open : 'open'
+			open : 'open',
+
+			container : 'container'
 
 		},
 		html : {
@@ -65,16 +66,40 @@
 			leaf : '<LI>',
 			children : '<UL>',
 
+			heading : '<DIV>',
 			control : '<SPAN>',
+			status : '<SPAN>',
 			text : '<SPAN>',
+
+			container : '<DIV>'
 
 		},
 		control : {
 			close : '+',
 			open : '&ndash;'
 		},
-		storeLoaded : true
+		storeLoaded : true,
+		selectParentOnClose : false,
 
+		labelsBreak : {
+			by : 0,
+			str : '\n',
+			showAlways : false,
+			showOnHover : true,
+			showOnSelect : true
+		}
+
+	};
+
+	var breakLine = function (text, num) {
+		var arr = [];
+		var len = text.length;
+		var clen = 0;
+		while (clen <= len) {
+			arr.push(text.slice(clen, clen + num));
+			clen += num;
+		};
+		return arr;
 	};
 
 	jQuery.fn.extend({
@@ -97,44 +122,54 @@
 
 			// settings object
 			var x = {
-				container : this // JQ container for tree
+				container : this, // JQ container for tree
+				current : tree
 			};
 
 			$.each(DEFAULTS, function (name, value) {
+				var param = treeParams[name];
 				if (value && ((typeof value) == 'object')) {
-					x[name] = $.extend(value, treeParams[name] || {});
+					x[name] = $.extend(value, param || {});
 				} else {
-					x[name] = treeParams[name] || value;
+					x[name] = ((param === undefined) ? value : param);
 				}
 			});
+
+			var handle = function (leaf, type) {
+				if (x.handlers[type]) {
+					return x.handlers[type](leaf, controller, tree);
+				}
+				return true;
+			};
 
 			var loader = function (path, callback) {
 				if ($.isFunction(x.loader)) {
 					x.loader(path, callback);
 				} else {
-					log(STRINGS.undefLeafLoader);
+					log(UNDEFINED_LOADER);
 				}
 			};
 
 			var loadLeaf = function (leaf, callback) {
-				if (leaf.folder && leaf.open) {
-					x.cls.loader && (leaf.els.text.addClass(x.cls.loader));
-					loader(getPath(leaf), function (obj) {
-						parseChildren(leaf, obj, function (leaf) {
-							x.cls.loader && (leaf.els.text.removeClass(x.cls.loader));
-							callback && callback(leaf, tree, controller);
-						});
+				x.cls.loader && (leaf.els.status.addClass(x.cls.loader));
+				loader(getPath(leaf), function (obj) {
+					handle(leaf, 'loaded');
+					parseChildren(leaf, obj, function (leaf) {
+						x.cls.loader && (leaf.els.status.removeClass(x.cls.loader));
+						callback && callback(leaf, tree, controller);
 					});
-				}
+				});
 			};
 
 			var getPath = function (leaf) {
-				var arr = [leaf.name];
-				var el = leaf.parent;
-				while (el.parent !== null) {
-					arr.unshift(el.name);
-					el = el.parent;
-				};
+				var arr = [];
+				if (leaf) {
+					var el = leaf;
+					while (el.parent !== null) {
+						arr.unshift(el.name);
+						el = el.parent;
+					};
+				}
 				arr.unshift(x.root);
 				return arr;
 			};
@@ -147,52 +182,172 @@
 			};
 
 			var setControlHtml = function (leaf) {
-				leaf.els.control.html(leaf.open ? x.control.open : x.control.close);
+				var text = leaf.open ? x.control.open : x.control.close;
+				leaf.els.control.html(text);
 			};
 
-			var setControl = function (leaf) {
-				var control = leaf.els.control;
+			var setTextHtml = function (leaf) {
+				if (leaf && leaf.textBreakArray && !x.labelsBreak.showAlways) {
+					var hover = x.labelsBreak.showOnHover && leaf.els.text.hasClass(x.cls.hover);
+					var selected = x.labelsBreak.showOnSelect && leaf.els.text.hasClass(x.cls.selected);
+					if ((hover && !selected) || selected) {
+						leaf.els.text.html(leaf.textBreakArray.join(x.labelsBreak.str));
+					} else {
+						leaf.els.text.html(leaf.textBreakArray[0]);
+					}
+				}
+			};
+
+			var blur = function (callback) {
+				if (!x.current.parent || handle(x.current, 'beforeblur')) {
+					if (x.current.parent) {
+						x.current.els.text.removeClass(x.cls.selected);
+						setTextHtml(x.current);
+						handle(x.current, 'blur');
+						x.current = tree;
+					}
+					callback && callback();
+				}
+			};
+			var focus = function (leaf) {
+				leaf.els.text.addClass(x.cls.selected);
+				x.current = leaf;
+				setTextHtml(x.current);
+				handle(x.current, 'focus');
+			};
+
+			var blurByParent = function (parent) {
+				if (x.current.parent) {
+					var el = x.current.parent;
+					while (el.parent !== null) {
+						if (el == parent) {
+							return true;
+							break;
+						} else {
+							el = el.parent;
+						}
+					};
+				}
+				return false;
+			};
+
+			var openLeaf = function (leaf) {
+				if (x.storeLoaded && (leaf.items.length > 0)) {
+					leaf.els.children[x.animate.open](x.animate.delay, function () {
+						setControlHtml(leaf);
+						handle(leaf, 'open');
+					});
+				} else {
+					loadLeaf(leaf, function (leaf) {
+						setControlHtml(leaf);
+						handle(leaf, 'open');
+					});
+				}
+			};
+
+			var closeLeaf = function (leaf, callback) {
+				leaf.els.children[x.animate.close](x.animate.delay, function () {
+					setControlHtml(leaf);
+					if (!x.storeLoaded) {
+						emptyLeaf(leaf);
+					}
+					callback && callback();
+					handle(leaf, 'close');
+				});
 			};
 
 			var makeLeaf = function (leaf) {
 				var els = leaf.els = {
 					control : makeEl('control'),
+					status : makeEl('status'),
 					text : makeEl('text', leaf.text),
 					children : makeEl('children')
 				};
 				setControlHtml(leaf);
 				if (leaf.folder) {
 					els.control.addClass(x.cls.folder);
-					els.control.on('click', function (evt) {
+					els.control.on('click', function (ev) {
+						ev.stopPropagation();
 						leaf.open = !leaf.open;
 						if (leaf.open) {
-							if (x.storeLoaded && (leaf.items.length > 0)) {
-								leaf.els.children[x.animate.open](x.animate.delay, function () {
-									setControlHtml(leaf);
+							openLeaf(leaf);
+						} else {
+							if (blurByParent(leaf)) {
+								blur(function () {
+									closeLeaf(leaf, function () {
+										if (x.selectParentOnClose) {
+											focus(leaf);
+										}
+									});
 								});
 							} else {
-								loadLeaf(leaf, function (leaf) {
-									setControlHtml(leaf);
-									// todo: scroll leaf into view...
-								});
+								closeLeaf(leaf);
 							}
-						} else {
-							leaf.els.children[x.animate.close](x.animate.delay, function () {
-								setControlHtml(leaf);
-							});
 						}
 					});
 				}
-				leaf.container = makeEl('leaf').append(els.control, els.text, els.children);
+				leaf.els.text.on('mouseover', function (ev) {
+					leaf.els.text.addClass(x.cls.hover);
+					setTextHtml(leaf);
+					handle(leaf, 'hover');
+				});
+				leaf.els.text.on('mouseout', function (ev) {
+					leaf.els.text.removeClass(x.cls.hover);
+					setTextHtml(leaf);
+					handle(leaf, 'unhover');
+				});
+				leaf.els.text.on('click', function (ev) {
+					ev.stopPropagation();
+					var el = leaf.els.text;
+					blur(function () {
+						focus(leaf);
+					});
+
+				});
+				
+				// leaf.els.text[0].addEventListener('DOMNodeRemovedFromDocument', function (ev) {
+					// handle(leaf, 'deleted');
+				// }, true);
+				
+				if (x.listeners) {
+					$.each(x.listeners, function (name, value) {
+						leaf.els.text.on(name, value);
+					});
+				}
+				// leaf.container = makeEl('leaf').append(els.control, els.status, els.text, els.children);
+				leaf.heading = makeEl('heading').append(els.control, els.status, els.text, els.children);
+				leaf.container = makeEl('leaf').append(leaf.heading);
 				leaf.container.appendTo(leaf.parent.els.children);
+			};
+
+			var emptyLeaf = function (leaf, callback) {
+				// if (x.handlers.deleted) {
+				// if (callback) {
+				// $.each(leaf.children, function (name, leaf) {
+				// emptyLeaf(leaf, function () {
+				// handle(leaf, 'deleted');
+				// });
+				// });
+				// callback && callback();
+				// } else {
+				// emptyLeaf(leaf, function () {
+				// (leaf.els && leaf.els.children) && leaf.els.children.empty();
+				// leaf.children = {};
+				// leaf.items = [];
+				// });
+				// }
+				// } else {
+				(leaf.els && leaf.els.children) && leaf.els.children.empty();
+				leaf.children = {};
+				leaf.items = [];
+				// }
 			};
 
 			var parseChildren = function (leaf, obj, callback) {
 
-				leaf.children = {};
-				leaf.items = [];
 				leaf.els.children.hide();
-				leaf.els.children.empty();
+
+				emptyLeaf(leaf);
 
 				$.each(obj, function (name, value) {
 
@@ -204,7 +359,21 @@
 
 					el.parent = leaf;
 					el.name = name;
-					!el.text && (el.text = name);
+
+					var text = el.text || name;
+					if (x.labelsBreak.by) {
+						var len = text.length;
+						if (len >= x.labelsBreak.by) {
+							var arr = breakLine(text, x.labelsBreak.by);
+							el.textBreakArray = arr;
+							if (x.labelsBreak.showAlways) {
+								text = arr.join(x.labelsBreak.str);
+							} else {
+								text = arr[0];
+							}
+						}
+					}
+					el.text = text;
 
 					el.children = {};
 					el.items = [];
@@ -214,13 +383,18 @@
 					leaf.children[name] = el;
 					leaf.items.push(el);
 
-					loadLeaf(el);
+					if (el.folder && el.open) {
+						loadLeaf(el);
+					}
+
+					handle(el, 'added');
 
 				});
 
 				var method = (leaf.parent == null) ? x.init.method : x.animate.open;
 
 				leaf.els.children[method](x.animate.delay, function () {
+					handle(leaf, 'parsed');
 					callback && callback(leaf, controller, tree);
 				});
 
@@ -239,16 +413,26 @@
 						x.init.preloader && (x.container.removeClass(x.init.preloader));
 
 						tree.els = {};
-						tree.container = tree.els.children = $(x.html.tree).addClass(x.theme + '_' + x.cls.root);
-						x.container.html(tree.container);
+						var childrenCls = x.theme + '_' + x.cls.root;
+						var containerCls = childrenCls + '_' + x.cls.container;
+						tree.container = $(x.html.container).addClass(containerCls).appendTo(x.container);
+						tree.els.children = $(x.html.tree).addClass(childrenCls).appendTo(tree.container);
 
-						parseChildren(tree, obj, function (leaf) {
-							x.init.callback(controller, tree);
+						x.init.callback(controller, tree);
+
+						parseChildren(tree, obj);
+
+						tree.container.on('click', function (ev) {
+							// if (ev.target == tree.container[0])
+							blur();
 						});
 
 					})
 
 				},
+
+				getPath : getPath,
+				x : x
 
 			};
 
