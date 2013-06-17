@@ -1,96 +1,96 @@
 (function (jQuery, undefined) {
-	
+
 	var e; // for catch(e)
-	
+
 	var log = function (str, obj) {
 		if (console && console.log) {
 			if (obj) {
 				console.log(obj, str);
-				} else {
+			} else {
 				console.log(str);
 			}
 		}
 	};
-	
+
 	var UNDEFINED_LOADER = 'Tree leaf loader is not a function.';
-	
+
 	var DEFAULTS = {
-		
+
 		init : {
-			
+
 			delay : null,
 			// no preloader className == no preloader
 			preloader : 'preloader',
 			// function (controller, tree)
 			callback : null,
 			method : 'fadeIn'
-			
+
 		},
-		
+
 		root : 'top',
 		// must be content loading function ( path, callback ),
 		// where callback will receive leafObject
 		loader : null,
-		
+
 		animate : {
 			delay : 500,
 			open : 'slideDown',
 			close : 'slideUp'
 		},
-		
+
 		handlers : null,
 		listeners : null,
-		
+
 		theme : 'custom',
 		cls : {
-			
+
 			root : 'tree_root',
-			
+
 			control : 'tree_control',
 			status : 'tree_leaf_status',
 			text : 'tree_leaf_text',
-			
+
 			folder : 'folder',
 			selected : 'selected',
 			hover : 'hover',
-			
+
 			loader : 'loader',
 			open : 'open',
-			
+
 			container : 'container',
-			
+
 			supressLabelTextSelection : 'unselectable',
 			supressTreeTextSelection : 'unselectable'
-			
+
 		},
 		html : {
-			
+
 			tree : '<UL>',
 			leaf : '<LI>',
 			children : '<UL>',
-			
+
 			heading : '<DIV>',
 			control : '<SPAN>',
 			status : '<SPAN>',
 			text : '<SPAN>',
-			
+
 			container : '<DIV>'
-			
+
 		},
 		control : {
 			close : '+',
 			open : '&ndash;'
 		},
-		
+
 		storeLoaded : true,
-		
+
 		focusParentOnClose : false,
-		
+
 		focusByDblClick : false,
-		
+
 		blurFromContainerClick : true,
 		blurFromContainerDblClick : false,
-		
+
 		labelsBreak : {
 			by : 0,
 			str : '\n',
@@ -98,9 +98,9 @@
 			expandOnHover : false,
 			expandOnSelect : true
 		}
-		
+
 	};
-	
+
 	var breakLine = function (text, num) {
 		var arr = [];
 		var len = text.length;
@@ -111,39 +111,39 @@
 		};
 		return arr;
 	};
-	
+
 	var customTree = function (treeParams) {
-			
+
 		// tree object iself
 		var tree = {
-			
+
 			parent : null,
 			name : null,
 			text : null,
-			
+
 			folder : true,
 			open : true,
-			
+
 			children : {},
 			items : []
-			
+
 		};
-		
+
 		// settings object
 		var x = {
 			container : this, // JQ container for tree
 			current : tree
 		};
-		
+
 		$.each(DEFAULTS, function (name, value) {
 			var param = treeParams[name];
 			if (value && ((typeof value) == 'object')) {
 				x[name] = $.extend(value, param || {});
-				} else {
+			} else {
 				x[name] = ((param === undefined) ? value : param);
 			}
 		});
-		
+
 		var handle = function (leaf, type, callback) {
 			if (x.handlers[type]) {
 				var arr = [leaf, controller, tree];
@@ -152,15 +152,15 @@
 			}
 			return true;
 		};
-		
+
 		var loader = function (path, callback) {
 			if ($.isFunction(x.loader)) {
 				x.loader(path, callback);
-				} else {
+			} else {
 				log(UNDEFINED_LOADER);
 			}
 		};
-		
+
 		var loadLeaf = function (leaf, callback) {
 			x.cls.loader && (leaf.els.status.addClass(x.cls.loader));
 			loader(getPath(leaf), function (obj) {
@@ -171,7 +171,7 @@
 				});
 			});
 		};
-		
+
 		var getPath = function (leaf) {
 			var arr = [];
 			if (leaf) {
@@ -184,31 +184,31 @@
 			arr.unshift(x.root);
 			return arr;
 		};
-		
+
 		var makeEl = function (type, html) {
 			var el = $(x.html[type] || type);
 			x.cls[type] && el.addClass(x.cls[type]);
 			html && el.html(html);
 			return el;
 		};
-		
+
 		var setControlHtml = function (leaf) {
 			var text = leaf.open ? x.control.open : x.control.close;
 			leaf.els.control.html(text);
 		};
-		
+
 		var setTextHtml = function (leaf) {
 			if (leaf && leaf.textBreakArray && !x.labelsBreak.expandAlways) {
 				var hover = x.labelsBreak.expandOnHover && leaf.els.text.hasClass(x.cls.hover);
 				var selected = x.labelsBreak.expandOnSelect && leaf.els.text.hasClass(x.cls.selected);
 				if ((hover && !selected) || selected) {
 					leaf.els.text.html(leaf.textBreakArray.join(x.labelsBreak.str));
-					} else {
+				} else {
 					leaf.els.text.html(leaf.textBreakArray[0]);
 				}
 			}
 		};
-		
+
 		var blur = function (callback) {
 			if (x.current.parent) {
 				handle(x.current, 'beforeblur', function () {
@@ -218,7 +218,7 @@
 					x.current = tree;
 					callback && callback();
 				});
-				} else {
+			} else {
 				callback && callback();
 			}
 		};
@@ -228,7 +228,7 @@
 			setTextHtml(x.current);
 			handle(x.current, 'focus');
 		};
-		
+
 		var blurByParent = function (parent) {
 			if (x.current.parent) {
 				var el = x.current.parent;
@@ -236,14 +236,14 @@
 					if (el == parent) {
 						return true;
 						break;
-						} else {
+					} else {
 						el = el.parent;
 					}
 				};
 			}
 			return false;
 		};
-		
+
 		var openLeaf = function (leaf) {
 			if (x.storeLoaded && (leaf.items.length > 0)) {
 				leaf.els.children[x.animate.open](x.animate.delay, function () {
@@ -251,13 +251,13 @@
 					handle(leaf, 'open');
 				});
 			} else {
-				loadLeaf(leaf, function(){
+				loadLeaf(leaf, function () {
 					setControlHtml(leaf);
 					handle(leaf, 'open');
 				});
 			}
 		};
-		
+
 		var closeLeaf = function (leaf, callback) {
 			leaf.els.children[x.animate.close](x.animate.delay, function () {
 				setControlHtml(leaf);
@@ -268,7 +268,7 @@
 				callback && callback();
 			});
 		};
-		
+
 		var selectLeaf = function (leaf) {
 			if (leaf !== x.current) {
 				blur(function () {
@@ -276,7 +276,7 @@
 				});
 			}
 		};
-		
+
 		var makeLeaf = function (leaf) {
 			var els = leaf.els = {
 				control : makeEl('control'),
@@ -284,9 +284,9 @@
 				text : makeEl('text', leaf.text),
 				children : makeEl('children')
 			};
-			
+
 			x.cls.supressLabelTextSelection && els.text.addClass(x.cls.supressLabelTextSelection);
-			
+
 			setControlHtml(leaf);
 			if (leaf.folder) {
 				els.control.addClass(x.cls.folder);
@@ -302,11 +302,11 @@
 									}
 								});
 							});
-							} else {
+						} else {
 							leaf.open = !leaf.open;
 							closeLeaf(leaf);
 						}
-						} else {
+					} else {
 						leaf.open = !leaf.open;
 						openLeaf(leaf);
 					}
@@ -329,11 +329,11 @@
 			leaf.els.text.on('deleted', function (ev) {
 				handle(leaf, 'deleted');
 			});
-			
+
 			// leaf.els.text[0].addEventListener('DOMNodeRemovedFromDocument', function (ev) {
 			// handle(leaf, 'deleted');
 			// }, true);
-			
+
 			leaf.els.text.on('dblclick', function (ev) {
 				x.focusByDblClick && selectLeaf(leaf);
 				if (x.handlers) {
@@ -356,14 +356,14 @@
 			leaf.container = makeEl('leaf').append(leaf.heading);
 			leaf.container.appendTo(leaf.parent.els.children);
 		};
-		
+
 		var emptyLeaf = function (leaf, callback) {
-			
+
 			// $.each(leaf.children, function (name, leaf) {
 			// emptyLeaf(leaf);
 			// handle(leaf, 'deleted');
 			// });
-			
+
 			if (x.handlers.deleted) {
 				var oldClean = jQuery.cleanData;
 				$.cleanData = function (elems) {
@@ -374,32 +374,32 @@
 				};
 				(leaf.els && leaf.els.children) && leaf.els.children.empty();
 				$.cleanData = oldClean;
-				} else {
+			} else {
 				(leaf.els && leaf.els.children) && leaf.els.children.empty();
 			}
-			
+
 			leaf.children = {};
 			leaf.items = [];
-			
+
 		};
-		
+
 		var parseChildren = function (leaf, obj, callback) {
-			
+
 			leaf.els.children.hide();
-			
+
 			emptyLeaf(leaf);
-			
+
 			$.each(obj, function (name, value) {
-				
+
 				var el = $.extend({
-					folder : false,
-					// undefined || null || false
-					open : (!value.folder) ? true : false
-				}, value);
-				
+						folder : false,
+						// undefined || null || false
+						open : (!value.folder) ? true : false
+					}, value);
+
 				el.parent = leaf;
 				el.name = name;
-				
+
 				var text = el.text || name;
 				if (x.labelsBreak.by) {
 					var len = text.length;
@@ -408,100 +408,102 @@
 						el.textBreakArray = arr;
 						if (x.labelsBreak.expandAlways) {
 							text = arr.join(x.labelsBreak.str);
-							} else {
+						} else {
 							text = arr[0];
 						}
 					}
 				}
 				el.text = text;
-				
+
 				el.children = {};
 				el.items = [];
-				
+
 				makeLeaf(el);
-				
+
 				leaf.children[name] = el;
 				leaf.items.push(el);
-				
+
 				if (el.folder && el.open) {
 					loadLeaf(el);
 				}
-				
+
 				handle(el, 'added');
-				
+
 			});
-			
+
 			var method = (leaf.parent == null) ? x.init.method : x.animate.open;
-			
+
 			leaf.els.children[method](x.animate.delay, function () {
 				handle(leaf, 'parsed');
 				callback && callback(leaf, controller, tree);
 			});
-			
+
 		};
-		
+
 		var controller = {
-			
+
 			init : function (callback) {
-				
+
 				x.container.empty();
-				
+
 				x.init.preloader && (x.container.addClass(x.init.preloader));
-				
+
 				loader([x.root], function (obj) {
-					
+
 					x.init.preloader && (x.container.removeClass(x.init.preloader));
-					
+
 					tree.els = {};
 					var childrenCls = x.theme + '_' + x.cls.root;
 					var containerCls = childrenCls + '_' + x.cls.container;
 					tree.container = $(x.html.container).addClass(containerCls).appendTo(x.container);
 					tree.els.children = $(x.html.tree).addClass(childrenCls).appendTo(tree.container);
-					
+
 					x.cls.supressTreeTextSelection && tree.els.children.addClass(x.cls.supressTreeTextSelection);
-					
+
 					x.init.callback(controller, tree);
-					
+
 					parseChildren(tree, obj);
-					
+
 					tree.container.on('click', function (ev) {
 						// if (ev.target == tree.container[0])
-						if(x.blurFromContainerClick) {
+						if (x.blurFromContainerClick) {
 							blur();
 						}
 					});
 					tree.container.on('dblclick', function (ev) {
-						if(x.blurFromContainerDblClick) {
+						if (x.blurFromContainerDblClick) {
 							blur();
 						}
 					});
-					
+
 				})
-				
+
 			},
-			
+
 			getPath : getPath,
-			
-			blur: blur,
-			focus: focus,
-			
+
+			blur : blur,
+			focus : focus,
+
 			x : x
-			
+
 		};
-		
+
 		try {
-			
+
 			// tree startup
 			window.setTimeout(function () {
 				controller.init();
 			}, x.init.delay);
-			
-			} catch (e) {
+
+		} catch (e) {
 			log(e.stack || e);
 		}
-		
+
 	};
-	
-	jQuery.fn.extend({ customTree: customTree });
-	
+
+	jQuery.fn.extend({
+		customTree : customTree
+	});
+
 })(jQuery);
