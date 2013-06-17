@@ -332,7 +332,7 @@
 
 			// leaf.els.text[0].addEventListener('DOMNodeRemovedFromDocument', function (ev) {
 			// handle(leaf, 'deleted');
-			// }, true);
+			// }, false);
 
 			leaf.els.text.on('dblclick', function (ev) {
 				x.focusByDblClick && selectLeaf(leaf);
@@ -365,15 +365,15 @@
 			// });
 
 			if (x.handlers.deleted) {
-				var oldClean = jQuery.cleanData;
+				var jClean = jQuery.cleanData;
 				$.cleanData = function (elems) {
 					for (var i = 0, elem; (elem = elems[i]) !== undefined; i++) {
 						$(elem).triggerHandler("deleted");
 					}
-					oldClean(elems);
+					jClean(elems);
 				};
 				(leaf.els && leaf.els.children) && leaf.els.children.empty();
-				$.cleanData = oldClean;
+				$.cleanData = jClean;
 			} else {
 				(leaf.els && leaf.els.children) && leaf.els.children.empty();
 			}
