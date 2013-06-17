@@ -14,7 +14,8 @@ $(function () {
 		};
 		info();
 
-		var countRand = 0;
+		var countRand = 0; // emulate network delays
+		
 		$('#tree_content').customTree({
 
 			root : 'top',
@@ -79,7 +80,7 @@ $(function () {
 			},
 
 			storeLoaded : false,
-			focusParentOnClose : true,
+			// focusParentOnClose : true,
 			// focusByDblClick: true,
 			// blurFromContainerClick : false,
 			// blurFromContainerDblClick : false,
@@ -104,16 +105,18 @@ $(function () {
 						url : './tree.php',
 						success : function (data) {
 							if (data !== '') {
-								try{
+								try {
 									var resp = JSON.parse(data);
-									
-								} catch ( e ) {
+
+								} catch (e) {
 									$('#php_debug').html(data);
 								}
 								if (resp.success) {
 									window.setTimeout(function () {
 										callback(resp.data);
-									}, 50);
+										countRand++;
+										(countRand > 3) && (countRand = 0);
+									}, countRand == 0 ? null : 700);
 								}
 							}
 						},
