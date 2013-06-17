@@ -91,40 +91,70 @@ $(function () {
 			},
 
 			loader : function (path, callback) {
-				var obj = {
-					action : 'get',
-					leaf : JSON.stringify(path)
-				};
-				try {
-					$.ajax({
-						type : "POST",
-						async : true,
-						data : obj,
-						dataType : 'text',
-						url : './tree.php',
-						success : function (data) {
-							if (data !== '') {
-								try{
-									var resp = JSON.parse(data);
-									
-								} catch ( e ) {
-									$('#php_debug').html(data);
-								}
-								if (resp.success) {
-									window.setTimeout(function () {
-										callback(resp.data);
-									}, 50);
-								}
-							}
+				var obj;
+				var path = JSON.stringify(path);
+				info('Loading : ' + path);
+				switch (path) {
+				case '["top"]':
+					obj = {
+						child1 : {
+							text : 'name1',
+							folder : true,
+							open : true
 						},
-						error : function (data) {
-							alert(data);
+						child2 : {
+							text : 'name2',
+							opts : '123'
+						},
+						child3 : {
+							folder : true,
+							open : false
+						},
+						child4 : {
+							text : 'name4'
+						},
+						child5 : {
+							text : 'name5',
+							folder : true
 						}
-					});
-				} catch (e) {
-					info(e.stack || e);
+					};
+					break;
+				case '["top","child1"]':
+					obj = {
+						child1 : {
+							text : 'name11'
+						},
+						child2 : {
+							text : 'name12',
+							opts : '123'
+						}
+					};
+					break;
+				default:
+					countRand++;
+					var longText = 'child3  child3  child3 child3  child3  child3 child3  child3  child3';
+					obj = {
+						child1 : {
+							folder : true,
+							text : longText
+						},
+						child2 : {},
+						child3 : {
+							text : longText
+						},
+						child4 : {
+							folder : true
+						},
+						child5 : {}
+					}
+					var el = Math.random() > 0.5 ? 'child4' : 'child1';
+					obj[el].open = countRand > 25 ? false : true;
 				}
-
+				var val = JSON.stringify(obj);
+				window.setTimeout(function () {
+					callback(JSON.parse(val));
+					// }, 1000);
+				}, 50);
 			}
 
 		});
