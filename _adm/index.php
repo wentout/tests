@@ -4,7 +4,7 @@
 <head ng-controller = "HeadCtrl">
 	
 	<meta http-equiv="Content-Type" content="text/html; charset=utf=8">
-	<title> {{title}} </title>
+	<title> Fine Cut Engine </title>
 	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/jquery-2.0.2.min.js"></script>
 	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/angular.1.1.5.min.js"></script>
 	

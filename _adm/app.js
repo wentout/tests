@@ -1,5 +1,6 @@
 $(function () {
 
+	document.title = '{{ title }}';
 	var settings = {
 
 		head : {
@@ -7,6 +8,8 @@ $(function () {
 		}
 
 	};
+	
+	
 	angular.element(document).ready(function () {
 
 		var myApp = angular.module('myApp', []);
