@@ -1,12 +1,9 @@
 $(function () {
 
-	document.title = '{{ title }}';
 	var settings = {
-
 		head : {
 			title : 'Hola!'
 		}
-
 	};
 	
 	
@@ -20,7 +17,6 @@ $(function () {
 			]);
 
 		var app = $('#ng-app');
-
 		angular.bootstrap(app, ['myApp']);
 
 	});
