@@ -6,19 +6,19 @@ $(function () {
 		}
 	};
 	
+	debugger;
 	
-	angular.element(document).ready(function () {
+	var app = angular.module('fineCutAdm', []);
+	app.controller('HeadCtrl', ['$scope', function ($scope) {
+				$.extend($scope, settings.head);
+			}
+		]);
 
-		var myApp = angular.module('myApp', []);
+	app.controller('BodyCtrl', ['$scope', function ($scope) {
+				$.extend($scope, settings.head);
+			}
+		]);
 
-		myApp.controller('HeadCtrl', ['$scope', function ($scope) {
-					$.extend($scope, settings.head);
-				}
-			]);
-
-		var app = $('#ng-app');
-		angular.bootstrap(app, ['myApp']);
-
-	});
+	angular.bootstrap($('#ng-app'), ['fineCutAdm']);
 
 }); ;
