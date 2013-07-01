@@ -26,18 +26,15 @@
 <div class = "navbar navbar-fixed-top">
 	<div class = "navbar-inner">
 		<div class = "container">
-			<a href = "#main"><b class = "brand" >{{i18n.brand}}</b></a>
-			<ul class = "nav" id = "mainTabs">
-				<li><a href = "#pages">{{i18n.tabs.pages}}</a></li>
-				<li><a href = "#templates">{{i18n.tabs.templates}}</a></li>
-				<li><a href = "#files">{{i18n.tabs.files}}</a></li>
-				<li><a href = "#settings">{{i18n.tabs.settings}}</a></li>
+			<a href = "#!/main" ng-click = "mainTab()"><b class = "brand">{{i18n.brand}}</b></a>
+			<ul class = "nav" id = "mainTabs" ng-repeat="tab in tabs">
+				<li ng-class = "activeTab()"><a href = "#!{{tab}}">{{i18n.tabs[tab]}}</a></li>
 			</ul>
 		</div>
 	</div>
 </div>
 
-<div id = "container" class = "well" ng-view></div>
+<div id = "container" class = "well" ng-view>application error</div>
 
 <div id = "info" class = "well hidden">asdf</div>
 	
