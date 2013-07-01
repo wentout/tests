@@ -23,19 +23,25 @@
 	
 <body ng-controller = "BodyCtrl">
 
+
 <div class = "navbar navbar-fixed-top">
 	<div class = "navbar-inner">
 		<div class = "container">
 			<b class = "brand" >{{brand}}</b>
 			<ul class = "nav">
-				<li><a href = "#">Pages Manager</a></li>
-				<li><a href = "#">Templates</a></li>
-				<li><a href = "#">File Manager</a></li>
-				<li><a href = "#">Settings</a></li>
+				<li><a href = "#pages">{{tabs.pages}}</a></li>
+				<li><a href = "#templates">{{tabs.templates}}</a></li>
+				<li><a href = "#files">{{tabs.files}}</a></li>
+				<li><a href = "#settings">{{tabs.settings}}</a></li>
 			</ul>
 		</div>
 	</div>
 </div>
+
+<div id = "container" class = "well" ng-view>
+</div>
+
+<div id = "info" class = "well hidden"></div>
 	
 </body>
 </html>

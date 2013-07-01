@@ -16,9 +16,11 @@ body {
 	margin: 0px 50px 0px 30px;
 }
 
-#debug  {
+#info  {
 	border: 1px solid black;
-	height: 440px;
-	width: 450px;
-	padding: 5px 15px 5px 15px;
+	bottom: 0px;
+	z-index: 1000;
+}
+.hidden  {
+	display: none;
 }
