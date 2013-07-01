@@ -9,13 +9,13 @@
 	<!-- libs //-->
 	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/jquery-2.0.2.min.js"></script>
 	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/angular.1.1.5.min.js"></script>
+	<!-- <script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/angular-resource.1.1.5.min.js"></script> //-->
 	
 	<link rel = "stylesheet" type = "text/css" href = "./css/bootstrap.2.3.2.min.css">
 
 
 	<!-- app //-->
 	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./tree/tree.js"></script>
-	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./app.js"></script>
 
 	<link rel = "stylesheet" type = "text/css" href = "./tree/tree.css">
 	<link rel = "stylesheet" type = "text/css" href = "./style.css">
@@ -23,25 +23,25 @@
 	
 <body ng-controller = "BodyCtrl">
 
-
 <div class = "navbar navbar-fixed-top">
 	<div class = "navbar-inner">
 		<div class = "container">
-			<b class = "brand" >{{brand}}</b>
-			<ul class = "nav">
-				<li><a href = "#pages">{{tabs.pages}}</a></li>
-				<li><a href = "#templates">{{tabs.templates}}</a></li>
-				<li><a href = "#files">{{tabs.files}}</a></li>
-				<li><a href = "#settings">{{tabs.settings}}</a></li>
+			<a href = "#main"><b class = "brand" >{{i18n.brand}}</b></a>
+			<ul class = "nav" id = "mainTabs">
+				<li><a href = "#pages">{{i18n.tabs.pages}}</a></li>
+				<li><a href = "#templates">{{i18n.tabs.templates}}</a></li>
+				<li><a href = "#files">{{i18n.tabs.files}}</a></li>
+				<li><a href = "#settings">{{i18n.tabs.settings}}</a></li>
 			</ul>
 		</div>
 	</div>
 </div>
 
-<div id = "container" class = "well" ng-view>
-</div>
+<div id = "container" class = "well" ng-view></div>
 
-<div id = "info" class = "well hidden"></div>
+<div id = "info" class = "well hidden">asdf</div>
 	
 </body>
+	<!-- app //-->
+	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./app.js"></script>
 </html>
