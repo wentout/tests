@@ -5,6 +5,7 @@
 	<meta http-equiv = "Content-Type" content = "text/html; charset=utf=8">
 	<title ng-bind-template = "{{title}}"> Fine Cut Engine </title>
 	
+	
 	<!-- libs //-->
 	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/jquery-2.0.2.min.js"></script>
 	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/angular.1.1.5.min.js"></script>
@@ -25,7 +26,7 @@
 <div class = "navbar navbar-fixed-top">
 	<div class = "navbar-inner">
 		<div class = "container">
-			<b class = "brand" >Admin's Page</b>
+			<b class = "brand" >{{brand}}</b>
 			<ul class = "nav">
 				<li><a href = "#">Pages Manager</a></li>
 				<li><a href = "#">Templates</a></li>

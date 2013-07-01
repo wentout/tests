@@ -5,9 +5,7 @@ $(function () {
 			title : 'Hola!'
 		}
 	};
-	
-	debugger;
-	
+
 	var app = angular.module('fineCutAdm', []);
 	app.controller('HeadCtrl', ['$scope', function ($scope) {
 				$.extend($scope, settings.head);
@@ -21,4 +19,4 @@ $(function () {
 
 	angular.bootstrap($('#ng-app'), ['fineCutAdm']);
 
-}); ;
+});
