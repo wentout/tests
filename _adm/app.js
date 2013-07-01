@@ -43,7 +43,13 @@ $(function () {
 	// var angular = angular.noConflict();
 
 	var app = angular.module('fineCutAdm', [])
-		.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+		
+		.config(['$locationProvider', function ($locationProvider) {
+					$locationProvider.hashPrefix('!');
+				}
+			])
+			
+		.config(['$routeProvider', function ($routeProvider) {
 					$routeProvider
 					.when('/main', {
 						templateUrl : 'parts/main.html',
@@ -68,45 +74,43 @@ $(function () {
 					.otherwise({
 						redirectTo : '/main'
 					});
-					$locationProvider.hashPrefix('!');
-
 				}
+			])
+
+		.controller('HeadCtrl', ['$scope', function ($scope) {
+					$.extend($scope, settings.locale.head);
+				}
+			])
+
+		.controller('BodyCtrl', ['$scope', '$location', function ($scope, $location, $locationProvider) {
+					$scope.i18n = settings.locale.body;
+					$scope.tabs = settings.links.main;
+					$scope.$location = $location;
+					$scope.activeTab = function () {
+						var path = $location.path();
+						if (path == '/' + this.tab) {
+							return 'active';
+						} else {
+							return '';
+						}
+					};
+				}
+			])
+
+		.controller('MainTabsCtrl', ['$scope', function ($scope) {}
+			])
+
+		.controller('PagesCtrl', ['$scope', function ($scope) {}
+			])
+
+		.controller('TemplatesCtrl', ['$scope', function ($scope) {}
+			])
+
+		.controller('FilesCtrl', ['$scope', function ($scope) {}
+			])
+
+		.controller('SettingsCtrl', ['$scope', function ($scope) {}
 			]);
-
-	app.controller('HeadCtrl', ['$scope', function ($scope) {
-				$.extend($scope, settings.locale.head);
-			}
-		]);
-
-	app.controller('BodyCtrl', ['$scope', '$location', function ($scope, $location, $locationProvider) {
-				$scope.i18n = settings.locale.body;
-				$scope.tabs = settings.links.main;
-				$scope.$location = $location;
-				$scope.activeTab = function () {
-					var path = $location.path();
-					if (path == '/' + this.tab) {
-						return 'active';
-					} else {
-						return '';
-					}
-				};
-			}
-		]);
-
-	app.controller('MainTabsCtrl', ['$scope', function ($scope) {}
-		]);
-
-	app.controller('PagesCtrl', ['$scope', function ($scope) {}
-		]);
-
-	app.controller('TemplatesCtrl', ['$scope', function ($scope) {}
-		]);
-
-	app.controller('FilesCtrl', ['$scope', function ($scope) {}
-		]);
-
-	app.controller('SettingsCtrl', ['$scope', function ($scope) {}
-		]);
 
 	angular.bootstrap($('#ng-app'), ['fineCutAdm']);
 
