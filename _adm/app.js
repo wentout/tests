@@ -33,7 +33,7 @@ $(function () {
 		url : settings.paths.locale(),
 		success : function (data) {
 			try {
-				$.extend(settings.locale, $.parseJSON(data));
+				$.extend(true, settings.locale, $.parseJSON(data));
 			} catch (e) {
 				info(e.stack || e, true);
 			}
@@ -43,12 +43,12 @@ $(function () {
 	// var angular = angular.noConflict();
 
 	var app = angular.module('fineCutAdm', [])
-		
+
 		.config(['$locationProvider', function ($locationProvider) {
 					$locationProvider.hashPrefix('!');
 				}
 			])
-			
+
 		.config(['$routeProvider', function ($routeProvider) {
 					$routeProvider
 					.when('/main', {
@@ -78,7 +78,7 @@ $(function () {
 			])
 
 		.controller('HeadCtrl', ['$scope', function ($scope) {
-					$.extend($scope, settings.locale.head);
+					$.extend(true, $scope, settings.locale.head);
 				}
 			])
 

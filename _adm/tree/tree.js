@@ -138,7 +138,7 @@
 		$.each(DEFAULTS, function (name, value) {
 			var param = treeParams[name];
 			if (value && ((typeof value) == 'object')) {
-				x[name] = $.extend(value, param || {});
+				x[name] = $.extend(true, value, param || {});
 			} else {
 				x[name] = ((param === undefined) ? value : param);
 			}
@@ -391,7 +391,7 @@
 
 			$.each(obj, function (name, value) {
 
-				var el = $.extend({
+				var el = $.extend(true, {
 						folder : false,
 						// undefined || null || false
 						open : (!value.folder) ? true : false
