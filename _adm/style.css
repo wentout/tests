@@ -1,20 +1,19 @@
 body {
 	background: #C0C0C0;
 	font-family: Tahoma;
+	overflow-y: scroll;
+}
+
+/* ie focusing elements */
+input:focus, textarea:focus {
+	outline: none;
 }
 
 #container {
 	background: white;
-	padding: 20px;
-	margin: 41px 5px 5px 5px;
-}
-
-#tree_content {
-	height: 450px;
-	width: 450px;
-	border: 1px solid black;
-	float: left;
-	margin: 0px 50px 0px 30px;
+	padding: 70px 50px 11px 50px;
+	margin: 0px 5px 5px 5px;
+	height: 100%;
 }
 
 #info  {
@@ -22,6 +21,57 @@ body {
 	bottom: 0px;
 	z-index: 1000;
 }
+
 .hidden  {
 	display: none;
+}
+
+#page_container {
+	display: table;
+}
+
+#tree_content {
+	height: 450px;
+	width: 450px;
+	border: 1px solid black;
+	margin: 0px 5px 0px 0px;
+	float: left;
+}
+
+#page_content  {
+	border: 1px solid black;
+	height: 440px;
+	width: 450px;
+	padding: 5px 15px 5px 15px;
+	float: right;
+}
+
+
+#settings {
+	width: 700px;
+	display: table-row;
+}
+#settings form {
+	display: table-cell;
+}
+#settings > button {
+	display: table-cell;
+	margin: 0px 0px 0px 100px;
+	font-size: 1.4em;
+	padding: 20px 40px 20px 40px;
+}
+#settings input, #settings label {
+	display: inline-block;
+	vertical-align: top;
+	margin: 0px 11px 0px 0px;
+}
+#settings label {
+	margin: -3px 11px 0px 0px;
+}
+#settings div{
+	display: block;
+	margin: 10px 0px 0px 0px;
+}
+#settings div label {
+	margin: 5px 11px 0px 0px;
 }

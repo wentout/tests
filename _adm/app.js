@@ -13,7 +13,8 @@ $(function () {
 		},
 		links : {
 			main : ['pages', 'templates', 'files', 'settings']
-		}
+		},
+		opts : null
 	};
 
 	var info = function (str, pre) {
@@ -26,18 +27,38 @@ $(function () {
 		}
 	};
 
-	$.ajax({
-		type : "POST",
-		async : false,
-		dataType : 'text',
-		url : settings.paths.locale(),
-		success : function (data) {
-			try {
-				$.extend(true, settings.locale, $.parseJSON(data));
-			} catch (e) {
-				info(e.stack || e, true);
+	var ajaxSync = function (path, success) {
+		$.ajax({
+			type : "POST",
+			async : false,
+			dataType : 'text',
+			url : path,
+			success : function (data) {
+				if (success) {
+					try {
+						var obj = $.parseJSON(data);
+					} catch (e) {
+						info(e.stack || e, true);
+					}
+					if (obj) {
+						success(obj);
+					}
+				}
 			}
+		});
+
+	};
+
+	ajaxSync(settings.paths.locale(), function (obj) {
+		try {
+			$.extend(true, settings.locale, obj);
+		} catch (e) {
+			info(e.stack || e, true);
 		}
+	});
+
+	ajaxSync('./options.json', function (obj) {
+		settings.opts = obj;
 	});
 
 	// var angular = angular.noConflict();
@@ -83,17 +104,19 @@ $(function () {
 			])
 
 		.controller('BodyCtrl', ['$scope', '$location', function ($scope, $location, $locationProvider) {
-					$scope.i18n = settings.locale.body;
-					$scope.tabs = settings.links.main;
-					$scope.$location = $location;
-					$scope.activeTab = function () {
-						var path = $location.path();
-						if (path == '/' + this.tab) {
-							return 'active';
-						} else {
-							return '';
+					$.extend($scope, {
+						i18n : settings.locale.body,
+						tabs : settings.links.main,
+						$location : $location,
+						activeTab : function () {
+							var path = $location.path();
+							if (path == '/' + this.tab) {
+								return 'active';
+							} else {
+								return '';
+							}
 						}
-					};
+					});
 				}
 			])
 
@@ -109,7 +132,24 @@ $(function () {
 		.controller('FilesCtrl', ['$scope', function ($scope) {}
 			])
 
-		.controller('SettingsCtrl', ['$scope', function ($scope) {}
+		.controller('SettingsCtrl', ['$scope', function ($scope) {
+					$.extend($scope, {
+						i18n : settings.locale.settings,
+						model : $.extend(true, {}, settings.opts),
+						add : function () {
+							$scope.model.pages.push({
+								domain : "",
+								page : ""
+							});
+						},
+						remove : function (index) {
+							$scope.model.pages.splice(index, 1);
+						},
+						save : function () {
+							
+						}
+					});
+				}
 			]);
 
 	angular.bootstrap($('#ng-app'), ['fineCutAdm']);
