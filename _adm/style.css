@@ -51,27 +51,40 @@ input:focus, textarea:focus {
 	width: 700px;
 	display: table-row;
 }
-#settings form {
+#settings > form {
 	display: table-cell;
 }
-#settings > button {
+#settings > #save {
+	vertical-align: top;
 	display: table-cell;
-	margin: 0px 0px 0px 100px;
+	padding: 0px 0px 0px 50px;
+}
+#settings > #save > button{
 	font-size: 1.4em;
 	padding: 20px 40px 20px 40px;
 }
-#settings input, #settings label {
-	display: inline-block;
-	vertical-align: top;
-	margin: 0px 11px 0px 0px;
+#settings > form > div > table td{
+	padding: 3px 7px 2px 3px;
 }
-#settings label {
-	margin: -3px 11px 0px 0px;
+#settings > form input {
+	margin-bottom: 0px;
 }
-#settings div{
+#settings > form > div > label > span {
+	margin-left: 15px;
 	display: block;
-	margin: 10px 0px 0px 0px;
 }
-#settings div label {
-	margin: 5px 11px 0px 0px;
+#settings > form > div.control-group{
+	display: table;
 }
+#settings > form > div.control-group > input, #settings > form > div.control-group > label {
+	display: table-cell;
+	vertical-align: middle;
+}
+#settings > form > div.control-group > label {
+	padding-left: 15px;
+}
+#settings label.checkbox input[type="checkbox"] {
+	margin-left: -10px;
+}
+
+

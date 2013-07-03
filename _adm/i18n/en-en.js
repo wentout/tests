@@ -17,7 +17,7 @@
 		"static_path" : "Path to Static content",
 		"perm_folder" : "Folder permitions",
 		"perm_files" : "File permitions",
-		"fileNameEncoding" : "Encoding that will be used for FileNames (file system encoding)",
+		"fileNameEncoding" : "Encoding that used for FileNames (file system encoding)",
 		"microtimeEcho" : "Add microtime echo for generated page",
 		"pages" : "Pages Tree Paths for the Domains",
 		"domain" : "Domain For This Path",

@@ -1,41 +1,67 @@
 <div id = "settings">
-<form ng-controller = "SettingsCtrl">
-	<input type = "checkbox" id = "use_growl" ng-model = "model.use_growl"><label for = "use_growl">{{i18n.use_growl}}</label>
-	<hr>
-	<b> {{i18n.pages}} </b><br>
-	<table border = "0">
-		<thead>
-			<tr>
-				<td>{{i18n.domain}} :</td><td>{{i18n.path}} :</td>
-				<td><button ng-click = "add()">{{i18n.add}}</button></td>
-			</tr>
-		</thead>
-		<tbody ng-repeat="page in model.pages">
-			<tr>
-				<td><input type = "text" ng-model = "page.domain" ng-readonly = "$index == 0"></td>
-				<td><input type = "text" ng-model = "page.page"></td>
-				<td><button ng-disabled = "$index == 0" ng-click = "remove($index)">{{i18n.remove}}</button></td>
-			</tr>
-		</tbody>
-	</table>
-	<hr>
-	<input type = "checkbox" id = "use_static" ng-model = "model.use_static"><label for = "use_static">{{i18n.use_static}}</label>
-	<div>
-		<input type = "text" id = "static_path" ng-model = "model.static_path"> <label for = "static_path">{{i18n.static_path}}</label>
+<form ng-controller = "SettingsCtrl" class = "">
+	
+	<div class = "control-group">
+		<label for = "use_growl" class = "checkbox">
+			<input type = "checkbox" id = "use_growl" ng-model = "model.use_growl">
+			<span>{{i18n.use_growl}}</span>
+		</label>
 	</div>
 	<hr>
-	<div>
-		<input type = "text" id = "perm_folder" ng-model = "model.perm_folder"> <label for = "perm_folder">{{i18n.perm_folder}}</label>
-	</div>
-	<div>
-		<input type = "text" id = "perm_files" ng-model = "model.perm_files"> <label for = "perm_files">{{i18n.perm_files}}</label> 
+	
+	<div class = "control-group">
+		<b> {{i18n.pages}} </b><br>
+		<table border = "0">
+			<thead>
+				<tr>
+					<td>{{i18n.domain}} :</td>
+					<td>{{i18n.path}} :</td>
+					<td><button ng-click = "add()" class = "btn" type = "button">{{i18n.add}}</button></td>
+				</tr>
+			</thead>
+			<tbody ng-repeat = "page in model.pages" ng-init="model.pages">
+				<tr>
+					<td><input type = "text" ng-model = "page.domain" 	ng-readonly = "$index == 0" required></td>
+					<td><input type = "text" ng-model = "page.page" required></td>
+					<td><button ng-disabled = "$index == 0" ng-click = "remove($index)" class = "btn btn-small" type = "button">{{i18n.remove}}</button></td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 	<hr>
-	<div>
-		<input type = "text" id = "fileNameEncoding" ng-model = "model.fileNameEncoding"> <label for = "fileNameEncoding">{{i18n.fileNameEncoding}}</label>
+
+	<div class = "control-group">
+		<input type = "text" id = "static_path" ng-model = "model.static_path">
+		<label class = "control-label" for = "static_path">{{i18n.static_path}}</label>
 	</div>
 	<hr>
-	<input type = "checkbox" id = "microtimeEcho" ng-model = "model.microtimeEcho"><label for = "microtimeEcho">{{i18n.microtimeEcho}}</label>
+
+	<div class = "control-group">
+		<input type = "text" id = "perm_folder" ng-model = "model.perm_folder" required maxlength = "4">
+		<label class = "control-label" for = "perm_folder">{{i18n.perm_folder}}</label>
+	</div>
+
+	<div class = "control-group">
+		<input type = "text" id = "perm_files" ng-model = "model.perm_files" required maxlength = "4">
+		<label class = "control-label" for = "perm_files">{{i18n.perm_files}}</label> 
+	</div>
+	<hr>
+	
+	<div class = "control-group">
+		<input type = "text" id = "fileNameEncoding" ng-model = "model.fileNameEncoding" required>
+		<label class = "control-label" for = "fileNameEncoding">{{i18n.fileNameEncoding}}</label>
+	</div>
+	<hr>
+	
+	<div class = "control-group">
+		<label for = "microtimeEcho" class = "checkbox">
+			<input type = "checkbox" id = "microtimeEcho" ng-model = "model.microtimeEcho">
+			<span>{{i18n.microtimeEcho}}</span>
+		</label>
+	</div>
+	
 </form>
-<button ng-click = "save()">Save</button>
+<div id = "save">
+	<button ng-click = "save()" class = "btn btn-large" type = "button">Save</button>
+</div>
 </div>

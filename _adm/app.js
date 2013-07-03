@@ -1,6 +1,6 @@
 $(function () {
 
-	var settings = {
+	var config = {
 		locale : {
 			name : 'en-en',
 			head : {},
@@ -8,13 +8,13 @@ $(function () {
 		},
 		paths : {
 			locale : function () {
-				return './i18n/' + settings.locale.name + '.js';
+				return './i18n/' + config.locale.name + '.js';
 			}
 		},
 		links : {
 			main : ['pages', 'templates', 'files', 'settings']
 		},
-		opts : null
+		settings : null
 	};
 
 	var info = function (str, pre) {
@@ -27,38 +27,48 @@ $(function () {
 		}
 	};
 
-	var ajaxSync = function (path, success) {
-		$.ajax({
+	var ajax = function (path, success, opts) {
+		var obj = {
 			type : "POST",
 			async : false,
 			dataType : 'text',
 			url : path,
 			success : function (data) {
-				if (success) {
-					try {
-						var obj = $.parseJSON(data);
-					} catch (e) {
-						info(e.stack || e, true);
+				if (data) {
+					if (success) {
+						try {
+							var obj = $.parseJSON(data);
+						} catch (e) {
+							info(data + '<hr>' + e.stack || e, true);
+						}
+						if (obj) {
+							success(obj);
+						}
 					}
-					if (obj) {
-						success(obj);
-					}
+				} else {
+					info('no data');
 				}
 			}
-		});
+		};
+		opts && ($.extend(obj, opts));
+		$.ajax(obj);
 
 	};
 
-	ajaxSync(settings.paths.locale(), function (obj) {
+	ajax(config.paths.locale(), function (obj) {
 		try {
-			$.extend(true, settings.locale, obj);
+			$.extend(true, config.locale, obj);
 		} catch (e) {
 			info(e.stack || e, true);
 		}
 	});
 
-	ajaxSync('./options.json', function (obj) {
-		settings.opts = obj;
+	ajax('./options.php', function (obj) {
+		config.settings = obj;
+	}, {
+		data : {
+			action : 'get'
+		}
 	});
 
 	// var angular = angular.noConflict();
@@ -99,14 +109,14 @@ $(function () {
 			])
 
 		.controller('HeadCtrl', ['$scope', function ($scope) {
-					$.extend(true, $scope, settings.locale.head);
+					$.extend(true, $scope, config.locale.head);
 				}
 			])
 
 		.controller('BodyCtrl', ['$scope', '$location', function ($scope, $location, $locationProvider) {
 					$.extend($scope, {
-						i18n : settings.locale.body,
-						tabs : settings.links.main,
+						i18n : config.locale.body,
+						tabs : config.links.main,
 						$location : $location,
 						activeTab : function () {
 							var path = $location.path();
@@ -134,8 +144,8 @@ $(function () {
 
 		.controller('SettingsCtrl', ['$scope', function ($scope) {
 					$.extend($scope, {
-						i18n : settings.locale.settings,
-						model : $.extend(true, {}, settings.opts),
+						i18n : config.locale.settings,
+						model : $.extend(true, {}, config.settings),
 						add : function () {
 							$scope.model.pages.push({
 								domain : "",
@@ -146,7 +156,31 @@ $(function () {
 							$scope.model.pages.splice(index, 1);
 						},
 						save : function () {
-							
+							var pages = [];
+							$.map($scope.$$childTail.model.pages, function (item, index) {
+								if (angular.isString(item.domain) && angular.isString(item.page) && item.domain.length > 0 && item.page.length > 0) {
+									pages.push({
+										domain : item.domain,
+										page : item.page
+									});
+								}
+							});
+							var model = $scope.model;
+							model.pages = pages;
+							ajax('./options.php', function (obj) {
+								$scope.$$childTail.model = $scope.model = obj;
+								$scope.$digest();
+							}, {
+								data : {
+									action : 'set',
+									data : js_beautify(JSON.stringify(model), {
+										indent_size : 1,
+										indent_char : '\t',
+										brace_style : 'collapse'
+									})
+								},
+								async : true
+							})
 						}
 					});
 				}

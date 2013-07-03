@@ -9,6 +9,7 @@
 	<!-- libs //-->
 	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/jquery-2.0.2.min.js"></script>
 	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/angular.1.1.5.min.js"></script>
+	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/beautify.js"></script>
 	<!-- <script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/angular-resource.1.1.5.min.js"></script> //-->
 	
 	<link rel = "stylesheet" type = "text/css" href = "./css/bootstrap.2.3.2.min.css">

@@ -1,18 +1,16 @@
 {
-	"use_growl" : true,
-	"use_static" : true,
-	"static_path" : "static",
-	"perm_folder" : "0755",
-	"perm_files" : "0644",
-	"fileNameEncoding" : "UTF-8",
-	"microtimeEcho" : true,
-	"pages" : [{
-			"domain" : "finecut-new",
-			"page" : "pages",
-			"default" : true
-		},{
-			"domain" : "finecut-new1",
-			"page" : "pages1"
-		}
-	]
+	"use_growl": true,
+	"use_static": true,
+	"static_path": "static",
+	"perm_folder": "0755",
+	"perm_files": "0644",
+	"fileNameEncoding": "UTF-8",
+	"microtimeEcho": true,
+	"pages": [{
+		"domain": "default",
+		"page": "pages"
+	}, {
+		"domain": "finecut-new:82",
+		"page": "pages"
+	}]
 }
