@@ -63,7 +63,7 @@ $(function () {
 		}
 	});
 
-	ajax('./options.php', function (obj) {
+	ajax('./options/', function (obj) {
 		config.settings = obj;
 	}, {
 		data : {
@@ -167,9 +167,13 @@ $(function () {
 							});
 							var model = $scope.model;
 							model.pages = pages;
-							ajax('./options.php', function (obj) {
-								$scope.$$childTail.model = $scope.model = obj;
-								$scope.$digest();
+							ajax('./options/', function (obj) {
+								if (obj.pages) {
+									$scope.$$childTail.model = $scope.model = obj;
+									$scope.$digest();
+								} else {
+									info('error obj ' + obj);
+								}
 							}, {
 								data : {
 									action : 'set',
