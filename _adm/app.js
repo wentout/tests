@@ -127,6 +127,9 @@ $(function () {
 							}
 						}
 					});
+					$('#container').css({
+						'minHeight' : '' + ($(document).height() - 100) + 'px'
+					});
 				}
 			])
 
@@ -139,7 +142,23 @@ $(function () {
 		.controller('TemplatesCtrl', ['$scope', function ($scope) {}
 			])
 
-		.controller('FilesCtrl', ['$scope', function ($scope) {}
+		.controller('FilesCtrl', ['$scope', function ($scope) {
+					// var h = (parseInt($('#container').css('minHeight')) - 50);
+					// var elf = $('#elfinder');
+					// elf.elfinder({
+						// // url : './elfinder-2.0-rc1/php/connector.php',
+						// // defaultView : 'list',
+						// url : './elfinder-1.2/connectors/php/connector_server.php', // connector URL (REQUIRED)
+						// disableShortcuts : true,
+						// // height : h,
+						// height : h + 'px'
+						// // commands : [
+						// // 'open', 'reload', 'home', 'up', 'back', 'forward', 'getfile', 'quicklook',
+						// // 'download', 'rm', 'rename', 'mkdir', 'mkfile', 'upload', 'edit', 'info', 'view', 'help', 'sort'
+						// // ]
+					// }).elfinder('instance');
+					// // elf.height(h + 'px');
+				}
 			])
 
 		.controller('SettingsCtrl', ['$scope', function ($scope) {

@@ -13,7 +13,6 @@ input:focus, textarea:focus {
 	background: white;
 	padding: 70px 50px 11px 50px;
 	margin: 0px 5px 5px 5px;
-	height: 100%;
 }
 
 #info  {

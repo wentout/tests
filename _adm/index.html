@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:ng = "http://angularjs.org" id = "ng-app">
+<head ng-controller = "HeadCtrl">
+	
+	<meta http-equiv = "Content-Type" content = "text/html; charset=utf=8">
+	<title ng-bind-template = "{{title}}"> Fine Cut Engine </title>
+	
+	<!-- <script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/jquery-2.0.2.min.js"></script> -->
+	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+	
+	
+	
+	
+	<!-- elFinder jQuery and jQuery UI (REQUIRED) -->
+	<!-- <script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "//code.jquery.com/jquery-migrate-1.2.1.js"></script> -->
+	<!-- <script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "//code.jquery.com/jquery-migrate-git.js"></script> -->
+	<!-- <link rel = "stylesheet" type = "text/css" media = "screen" href = "//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/smoothness/jquery-ui.css"> -->
+	<!-- <script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script> -->
+
+	<!-- elFinder CSS (REQUIRED) -->
+	<!-- <link rel = "stylesheet" type = "text/css" media = "screen" href = "./elfinder-2.0-rc1/css/elfinder.min.css"> -->
+	<!-- <link rel = "stylesheet" type = "text/css" media = "screen" href = "./elfinder-2.0-rc1/css/theme.css"> -->
+
+	<!-- elFinder JS (REQUIRED) -->
+	<!-- <script type = "text/javascript" src = "./elfinder-2.0-rc1/js/elfinder.min.w.fix.js"></script> -->
+	<!-- <script type = "text/javascript" src = "./elfinder-2.0-rc1/elFinder.js"></script> -->
+
+	
+	<!-- elFinder -->
+	<!-- <link rel="stylesheet" type="text/css" media="screen" href="./elfinder-1.2/css/elfinder.css" charset="utf-8"> -->
+	<!-- <script type="text/javascript" src="./elfinder-1.2/js/elfinder.full.js" charset="utf-8"></script> -->
+	<!-- elFinder -->
+	<!-- <link rel = "stylesheet" type = "text/css" media = "screen" href = "./elfinder_fix.css"> -->
+	
+	
+
+	<!-- libs //-->
+	<!-- <script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/angular.1.1.5.min.js"></script> -->
+	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/beautify.js"></script>
+	<!-- <script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./scripts/angular-resource.1.1.5.min.js"></script> //-->
+	
+	<link rel = "stylesheet" type = "text/css" href = "./css/bootstrap.2.3.2.min.css">
+
+	<!-- app //-->
+	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./tree/tree.js"></script>
+
+	<link rel = "stylesheet" type = "text/css" media = "screen" href = "./tree/tree.css">
+	<link rel = "stylesheet" type = "text/css" media = "screen" href = "./style.css">
+
+	
+<body ng-controller = "BodyCtrl">
+
+<div class = "navbar navbar-fixed-top">
+	<div class = "navbar-inner">
+		<div class = "container">
+			<a href = "#!/main" ng-click = "mainTab()"><b class = "brand">{{i18n.brand}}</b></a>
+			<ul class = "nav" id = "mainTabs" ng-repeat = "tab in tabs">
+				<li ng-class = "activeTab()"><a href = "#!{{tab}}">{{i18n.tabs[tab]}}</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div id = "container" class = "well" ng-view> application run failure </div>
+
+<div id = "info" class = "well hidden">asdf</div>
+	
+</body>
+	<!-- app //-->
+	<script language = "JavaScript" type = "text/javascript" charset = "utf-8" src = "./app.js"></script>
+</html>
