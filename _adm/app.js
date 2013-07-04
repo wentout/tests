@@ -63,14 +63,6 @@ $(function () {
 		}
 	});
 
-	ajax('./options/', function (obj) {
-		config.settings = obj;
-	}, {
-		data : {
-			action : 'get'
-		}
-	});
-
 	var setSizes = function () {
 		$('#container').css({
 			'minHeight' : '' + ($(document).height() - 100) + 'px'
@@ -157,13 +149,21 @@ $(function () {
 			])
 
 		.controller('SettingsCtrl', ['$scope', function ($scope) {
+					ajax('./options/', function (obj) {
+						config.settings = obj;
+					}, {
+						data : {
+							action : 'get'
+						}
+					});
+
 					$.extend($scope, {
 						i18n : config.locale.settings,
 						model : $.extend(true, {}, config.settings),
 						add : function () {
 							$scope.model.pages.push({
-								domain : "",
-								page : ""
+								domain : window.location.host,
+								page : $scope.model.pages_path
 							});
 						},
 						remove : function (index) {

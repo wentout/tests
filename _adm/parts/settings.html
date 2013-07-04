@@ -12,29 +12,50 @@
 			
 			<div class = "control-group">
 				<b> {{i18n.pages}} </b><br>
-				<table border = "0">
-					<thead>
-						<tr>
-							<td>{{i18n.domain}} :</td>
-							<td>{{i18n.path}} :</td>
-							<td><button ng-click = "add()" class = "btn" type = "button">{{i18n.add}}</button></td>
-						</tr>
-					</thead>
-					<tbody ng-repeat = "page in model.pages" ng-init="model.pages">
-						<tr>
-							<td><input type = "text" ng-model = "page.domain" 	ng-readonly = "$index == 0" required></td>
-							<td><input type = "text" ng-model = "page.page" required></td>
-							<td><button ng-disabled = "$index == 0" ng-click = "remove($index)" class = "btn btn-small" type = "button">{{i18n.remove}}</button></td>
-						</tr>
-					</tbody>
-				</table>
 			</div>
 			
+			<div class = "control-group">
+				<input type = "text" id = "pages_path" ng-model = "model.pages_path" required>
+				<label class = "control-label" for = "pages_path">{{i18n.pages_path}}</label>
+			</div>
+
 			<div class = "control-group">
 				<input type = "text" id = "static_path" ng-model = "model.static_path">
 				<label class = "control-label" for = "static_path">{{i18n.static_path}}</label>
 			</div>
 
+			<div class = "control-group">
+				<table border = "0">
+					<thead>
+						<tr>
+							<td>{{i18n.domain}} :</td>
+							<td colspan = "3">{{i18n.path}} :</td>
+						</tr>
+						<tr>
+							<td><b>default</b></td>
+							<td colspan = "2"><b>/{{model.pages_path}}/</b></td>
+							<td><button ng-click = "add()" class = "btn" type = "button">{{i18n.add}}</button></td>
+						</tr>
+					</thead>
+					<tbody ng-repeat = "page in model.pages" ng-init="model.pages">
+						<tr>
+							<td><input type = "text" ng-model = "page.domain" required></td>
+							<td> / {{model.pages_path}}  / </td>
+							<td><input type = "text" ng-model = "page.page" required></td>
+							<td><button ng-click = "remove($index)" class = "btn btn-small" type = "button">{{i18n.remove}}</button></td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr class = "{{((model.pages.length > 0) ? 'hide' : '')}}">
+							<td><input type = "text" value = "example.com" readonly></td>
+							<td> / {{model.pages_path}}  / </td>
+							<td><input type = "text" value = "example.com/" readonly></td>
+							<td><button class = "btn btn-small" type = "button" disabled>{{i18n.remove}}</button></td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+			
 			<div class = "control-group">
 				<label for = "microtimeEcho" class = "checkbox">
 					<input type = "checkbox" id = "microtimeEcho" ng-model = "model.microtimeEcho">
