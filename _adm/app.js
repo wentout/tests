@@ -19,7 +19,7 @@ $(function () {
 
 	var info = function (str, pre) {
 		var to = $('#info');
-		to.removeClass('hidden');
+		to.removeClass('hide');
 		if (pre) {
 			to.html('<pre>' + str + '</pre>');
 		} else {
@@ -69,6 +69,16 @@ $(function () {
 		data : {
 			action : 'get'
 		}
+	});
+
+	var setSizes = function () {
+		$('#container').css({
+			'minHeight' : '' + ($(document).height() - 100) + 'px'
+		});
+
+	};
+	$(window).on('resize', function () {
+		setSizes();
 	});
 
 	// var angular = angular.noConflict();
@@ -127,9 +137,7 @@ $(function () {
 							}
 						}
 					});
-					$('#container').css({
-						'minHeight' : '' + ($(document).height() - 100) + 'px'
-					});
+					setSizes();
 				}
 			])
 
@@ -143,21 +151,8 @@ $(function () {
 			])
 
 		.controller('FilesCtrl', ['$scope', function ($scope) {
-					// var h = (parseInt($('#container').css('minHeight')) - 50);
-					// var elf = $('#elfinder');
-					// elf.elfinder({
-						// // url : './elfinder-2.0-rc1/php/connector.php',
-						// // defaultView : 'list',
-						// url : './elfinder-1.2/connectors/php/connector_server.php', // connector URL (REQUIRED)
-						// disableShortcuts : true,
-						// // height : h,
-						// height : h + 'px'
-						// // commands : [
-						// // 'open', 'reload', 'home', 'up', 'back', 'forward', 'getfile', 'quicklook',
-						// // 'download', 'rm', 'rename', 'mkdir', 'mkfile', 'upload', 'edit', 'info', 'view', 'help', 'sort'
-						// // ]
-					// }).elfinder('instance');
-					// // elf.height(h + 'px');
+					var h = (parseInt($('#container').css('minHeight')));
+					$('#FilesExplorerFrame').height(h + 'px');
 				}
 			])
 

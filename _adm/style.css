@@ -11,7 +11,7 @@ input:focus, textarea:focus {
 
 #container {
 	background: white;
-	padding: 70px 50px 11px 50px;
+	padding: 55px 5px 11px 5px;
 	margin: 0px 5px 5px 5px;
 }
 
@@ -19,10 +19,6 @@ input:focus, textarea:focus {
 	border: 1px solid black;
 	bottom: 0px;
 	z-index: 1000;
-}
-
-.hidden  {
-	display: none;
 }
 
 #page_container {
@@ -45,44 +41,53 @@ input:focus, textarea:focus {
 	float: right;
 }
 
+#FilesExplorerFrame {
+	width: 100%; 
+	min-height: 350px; 
+	border: 0px solid white;
+}
 
 #settings {
-	width: 700px;
+	padding: 20px 30px 30px 70px;
+	display: block;
+}
+#settings > div {
+	border: 1px solid red;
 	display: table-row;
 }
 #settings > form {
 	display: table-cell;
 }
-#settings > #save {
+#settings > div > #save {
 	vertical-align: top;
 	display: table-cell;
 	padding: 0px 0px 0px 50px;
 }
-#settings > #save > button{
+#settings > div  > #save > button{
 	font-size: 1.4em;
 	padding: 20px 40px 20px 40px;
 }
-#settings > form > div > table td{
-	padding: 3px 7px 2px 3px;
+#settings > div > form > div > table td{
+	padding: 3px 7px 2px 0px;
 }
-#settings > form input {
+#settings > div > form input {
 	margin-bottom: 0px;
 }
-#settings > form > div > label > span {
+#settings > div > form > div > label > span {
 	margin-left: 15px;
 	display: block;
 }
-#settings > form > div.control-group{
+#settings > div > form > div.control-group{
 	display: table;
 }
-#settings > form > div.control-group > input, #settings > form > div.control-group > label {
+#settings > div > form > div.control-group > input, #settings > div > form > div.control-group > label {
 	display: table-cell;
 	vertical-align: middle;
 }
-#settings > form > div.control-group > label {
+#settings > div > form > div.control-group > label {
 	padding-left: 15px;
 }
-#settings label.checkbox input[type="checkbox"] {
+#settings > div label.checkbox input[type="checkbox"] {
 	margin-left: -10px;
 }
 
