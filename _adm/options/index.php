@@ -15,7 +15,9 @@
 		return $dt;
 	};
 
-	if( isset( $_POST['action'] ) ){ $action = $_POST['action']; }
+	if( isset( $_POST['action'] ) ){
+		$action = $_POST['action'];
+	}
 
 	if ( $action == 'get' ) {
 		readfile($path);

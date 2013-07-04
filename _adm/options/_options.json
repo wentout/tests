@@ -7,8 +7,8 @@
 	"fileNameEncoding": "UTF-8",
 	"microtimeEcho": true,
 	"pages": [{
-		"domain": "en.finecut-new",
-		"page": "en"
+		"domain": "finecut-new",
+		"page": "pages"
 	}],
 	"pages_path": "pages"
 }

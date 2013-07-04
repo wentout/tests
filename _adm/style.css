@@ -11,7 +11,7 @@ input:focus, textarea:focus {
 
 #container {
 	background: white;
-	padding: 55px 5px 11px 5px;
+	padding: 50px 5px 0px 5px;
 	margin: 0px 5px 5px 5px;
 }
 
@@ -23,22 +23,25 @@ input:focus, textarea:focus {
 
 #page_container {
 	display: table;
+	min-height: 350px;
+	min-width: 850px;
+	padding: 0px 50px 0px 10px;
 }
-
 #tree_content {
-	height: 450px;
-	width: 450px;
-	border: 1px solid black;
+	min-width: 300px;
+	border: 1px solid #C0C0C0;
 	margin: 0px 5px 0px 0px;
-	float: left;
+	display: table-cell;
 }
-
+#ctrl_content  {
+	display: table-cell;
+	min-width: 35px;
+}
 #page_content  {
-	border: 1px solid black;
-	height: 440px;
-	width: 450px;
+	border: 1px solid #C0C0C0;
+	min-width: 650px;
 	padding: 5px 15px 5px 15px;
-	float: right;
+	display: table-cell;
 }
 
 #FilesExplorerFrame {

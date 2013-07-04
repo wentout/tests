@@ -63,11 +63,17 @@ $(function () {
 		}
 	});
 
+	var currentHeight = function (asString, minus) {
+		!minus && (minus = 0);
+		var h = parseInt($('#container').css('minHeight')) - minus;
+		asString && (h += 'px');
+		return h;
+	};
+
 	var setSizes = function () {
 		$('#container').css({
-			'minHeight' : '' + ($(document).height() - 100) + 'px'
+			'minHeight' : '' + ($(document).height() - 75) + 'px'
 		});
-
 	};
 	$(window).on('resize', function () {
 		setSizes();
@@ -86,11 +92,11 @@ $(function () {
 					$routeProvider
 					.when('/main', {
 						templateUrl : 'parts/main.html',
-						controller : 'MainTabsCtrl'
+						controller : 'MainTabCtrl'
 					})
 					.when('/pages', {
 						templateUrl : 'parts/pages.html',
-						controller : 'BodyCtrl'
+						controller : 'PagesCtrl'
 					})
 					.when('/templates', {
 						templateUrl : './parts/templates.html',
@@ -133,18 +139,19 @@ $(function () {
 				}
 			])
 
-		.controller('MainTabsCtrl', ['$scope', function ($scope) {}
+		.controller('MainTabCtrl', ['$scope', function ($scope) {}
 			])
 
-		.controller('PagesCtrl', ['$scope', function ($scope) {}
+		.controller('PagesCtrl', ['$scope', function ($scope) {
+					$('#page_container').height(currentHeight(true, 11));
+				}
 			])
 
 		.controller('TemplatesCtrl', ['$scope', function ($scope) {}
 			])
 
 		.controller('FilesCtrl', ['$scope', function ($scope) {
-					var h = (parseInt($('#container').css('minHeight')));
-					$('#FilesExplorerFrame').height(h + 'px');
+					$('#FilesExplorerFrame').height(currentHeight(true));
 				}
 			])
 
