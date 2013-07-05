@@ -1,8 +1,9 @@
 <?php
 	
+	// setlocale(LC_ALL, '');
 	// mb_internal_encoding("UTF-8");
 
-	$root = $_SERVER["DOCUMENT_ROOT"];
+	$root = $_SERVER['DOCUMENT_ROOT'].'/';
 	
 	function _remove($rempath){
 		if (!is_dir($rempath)) {
@@ -23,8 +24,7 @@
 		return true;
 	}
 
-	function read_options() {
-		$root = $_SERVER["DOCUMENT_ROOT"];
+	function read_options($root) {
 		$settings_path = $root.'_adm/options/options.json';
 		$str = file_get_contents($settings_path);
 		$dt = get_object_vars(json_decode($str));
@@ -33,7 +33,7 @@
 		return $dt;
 	};
 	
-	$options = read_options();
+	$options = read_options($root);
 	$perm_folder = $options['perm_folder'];
 	
 	$pages_path = $root.$options['pages_path'];
@@ -53,8 +53,8 @@
 		$leaf = json_decode($_POST['leaf']);
 		if( isset( $leaf[0] ) ){
 			if( $leaf[0] == 'top' ){
-				if( count( $leaf) == 1){
-					// echo '{"error":"no_data"}';
+				if( count($leaf) > 1){
+					$pages_path = $pages_path.implode('/', array_slice($leaf, 1)).'/';
 				}
 			
 				if ($dh = opendir($pages_path)) {
@@ -62,26 +62,24 @@
 					while (($entry = readdir($dh)) !== false) {
 						if( $entry != "." && $entry != ".." ){
 							if( is_dir( $pages_path.$entry ) ){
-								$entry = mb_convert_encoding($entry, 'UTF-8', 'UTF-8');
-								echo $entry;
-								// $arr[$entry.name] = array(
-									// 'folder' => false
-								// );
-								// // if ($handleF = opendir($pages_path.'/'.$entry)) {
-									// // while (false !== ($entryF = readdir($handleF))) {
-										// // if( $entryF != "." && $entryF != ".." ){
-											// // if( is_dir( $pages_path.'/'.$entry.'/'.$entryF) ){
-												// // $arr[$entry]['folder'] = true;
-												// // break;
-											// // }
-										// // }
-									// // }
-								// // }
+								$arr[$entry] = array(
+									'folder' => false
+								);
+								if ($handleF = opendir($pages_path.'/'.$entry)) {
+									while (false !== ($entryF = readdir($handleF))) {
+										if( $entryF != "." && $entryF != ".." ){
+											if( is_dir( $pages_path.'/'.$entry.'/'.$entryF) ){
+												$arr[$entry]['folder'] = true;
+												break;
+											}
+										}
+									}
+								}
 							}
 						}
 					}
-					closedir($handle);
-					echo json_encode (array_keys($arr));
+					closedir($dh);
+					echo json_encode ($arr);
 				}
 			
 			}
@@ -89,6 +87,8 @@
 	}
 	
 	/*
+	// *****
+	
 	function paths( $leaf ){
 		include dirname(__FILE__).DIRECTORY_SEPARATOR.'settings.php';
 		$pages = $pages;

@@ -145,7 +145,7 @@
 		});
 
 		var handle = function (leaf, type, callback) {
-			if (x.handlers[type]) {
+			if (x.handlers && x.handlers[type]) {
 				var arr = [leaf, controller, tree];
 				callback && arr.unshift(callback);
 				x.handlers[type].apply(leaf, arr);
@@ -211,13 +211,18 @@
 
 		var blur = function (callback) {
 			if (x.current.parent) {
-				handle(x.current, 'beforeblur', function () {
+				var fn = function () {
 					x.current.els.text.removeClass(x.cls.selected);
 					setTextHtml(x.current);
 					handle(x.current, 'blur');
 					x.current = tree;
 					callback && callback();
-				});
+				};
+				if (x.handlers && x.handlers.beforeblur) {
+					handle(x.current, 'beforeblur', fn);
+				} else {
+					fn();
+				}
 			} else {
 				callback && callback();
 			}
@@ -336,10 +341,8 @@
 
 			leaf.els.text.on('dblclick', function (ev) {
 				x.focusByDblClick && selectLeaf(leaf);
-				if (x.handlers) {
-					if (x.handlers.dblclick) {
-						x.handlers.dblclick(leaf, controller, tree, ev);
-					}
+				if (x.handlers && x.handlers.dblclick) {
+					x.handlers.dblclick(leaf, controller, tree, ev);
 				}
 			});
 			if (x.listeners) {
@@ -364,7 +367,7 @@
 			// handle(leaf, 'deleted');
 			// });
 
-			if (x.handlers.deleted) {
+			if (x.handlers && x.handlers.deleted) {
 				var jClean = jQuery.cleanData;
 				$.cleanData = function (elems) {
 					for (var i = 0, elem; (elem = elems[i]) !== undefined; i++) {
@@ -460,7 +463,7 @@
 
 					x.cls.supressTreeTextSelection && tree.els.children.addClass(x.cls.supressTreeTextSelection);
 
-					x.init.callback(controller, tree);
+					x.init.callback && x.init.callback(controller, tree);
 
 					parseChildren(tree, obj);
 

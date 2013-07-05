@@ -148,12 +148,9 @@ $(function () {
 					tree.customTree({
 						loader : function (path, callback) {
 							ajax('./api/tree/', function (obj) {
-								debugger;
-								if(obj.error){
-									
-								} else {
-									callback;
-									obj;
+								if (obj.error) {}
+								else {
+									callback(obj);
 								}
 							}, {
 								data : {
