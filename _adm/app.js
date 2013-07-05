@@ -81,6 +81,22 @@ $(function () {
 
 	// var angular = angular.noConflict();
 
+	var tree = {
+		loader : function (path, callback) {
+			ajax('./api/tree/', function (obj) {
+				if (obj.error) {}
+				else {
+					callback(obj);
+				}
+			}, {
+				data : {
+					leaf : JSON.stringify(path)
+				},
+				async : true
+			});
+		}
+	};
+
 	var app = angular.module('fineCutAdm', [])
 
 		.config(['$locationProvider', function ($locationProvider) {
@@ -143,23 +159,7 @@ $(function () {
 			])
 
 		.controller('PagesCtrl', ['$scope', function ($scope) {
-					var tree = $('#page_container');
-					tree.height(currentHeight(true, 11));
-					tree.customTree({
-						loader : function (path, callback) {
-							ajax('./api/tree/', function (obj) {
-								if (obj.error) {}
-								else {
-									callback(obj);
-								}
-							}, {
-								data : {
-									leaf : JSON.stringify(path)
-								},
-								async : true
-							});
-						}
-					});
+					$('#tree_content').height(currentHeight(true, 11)).customTree(tree);
 				}
 			])
 
