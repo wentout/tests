@@ -143,7 +143,26 @@ $(function () {
 			])
 
 		.controller('PagesCtrl', ['$scope', function ($scope) {
-					$('#page_container').height(currentHeight(true, 11));
+					var tree = $('#page_container');
+					tree.height(currentHeight(true, 11));
+					tree.customTree({
+						loader : function (path, callback) {
+							ajax('./api/tree/', function (obj) {
+								debugger;
+								if(obj.error){
+									
+								} else {
+									callback;
+									obj;
+								}
+							}, {
+								data : {
+									leaf : JSON.stringify(path)
+								},
+								async : true
+							});
+						}
+					});
 				}
 			])
 

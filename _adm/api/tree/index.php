@@ -48,34 +48,47 @@
 	} else {
 		mkdir( $pages_path , $perm_folder ) or die ( '{"error":"Can\'t create pages path."}' );
 	}
-	
-	/*
 
-	if( file_exists($pagePath) ) {
-		
-	}
-	
-	if( file_exists($pagePath) && is_dir($pagePath) ) {
-		if( isset( $_POST['action'] ) ){
-			$action = $_POST['action']; 
-			if( isset( $_POST['leaf'] ) ){
-				$leaf = json_decode($_POST['leaf']);
-				
-				
-				
+	if( isset( $_POST['leaf'] ) ){
+		$leaf = json_decode($_POST['leaf']);
+		if( isset( $leaf[0] ) ){
+			if( $leaf[0] == 'top' ){
+				if( count( $leaf) == 1){
+					// echo '{"error":"no_data"}';
+				}
+			
+				if ($dh = opendir($pages_path)) {
+					$arr = array();
+					while (($entry = readdir($dh)) !== false) {
+						if( $entry != "." && $entry != ".." ){
+							if( is_dir( $pages_path.$entry ) ){
+								$entry = mb_convert_encoding($entry, 'UTF-8', 'UTF-8');
+								echo $entry;
+								// $arr[$entry.name] = array(
+									// 'folder' => false
+								// );
+								// // if ($handleF = opendir($pages_path.'/'.$entry)) {
+									// // while (false !== ($entryF = readdir($handleF))) {
+										// // if( $entryF != "." && $entryF != ".." ){
+											// // if( is_dir( $pages_path.'/'.$entry.'/'.$entryF) ){
+												// // $arr[$entry]['folder'] = true;
+												// // break;
+											// // }
+										// // }
+									// // }
+								// // }
+							}
+						}
+					}
+					closedir($handle);
+					echo json_encode (array_keys($arr));
+				}
+			
 			}
 		}
 	}
-
-	function nameU( $str ){
-		include dirname(__FILE__).DIRECTORY_SEPARATOR.'settings.php';
-		return mb_convert_encoding($str, $fileNameEncoding, "UTF-8");
-	};
-	function nameS( $str ){
-		include dirname(__FILE__).DIRECTORY_SEPARATOR.'settings.php';
-		return mb_convert_encoding($str, "UTF-8", $fileNameEncoding);
-	};
-
+	
+	/*
 	function paths( $leaf ){
 		include dirname(__FILE__).DIRECTORY_SEPARATOR.'settings.php';
 		$pages = $pages;
@@ -106,8 +119,8 @@
 					}
 				}
 			}
-			echo json_encode ($arr);
 			closedir($handle);
+			echo json_encode ($arr);
 		}
 	}
 
