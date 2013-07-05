@@ -1,6 +1,8 @@
 <?php
 	
-	mb_internal_encoding("UTF-8");
+	// mb_internal_encoding("UTF-8");
+
+	$root = $_SERVER["DOCUMENT_ROOT"];
 	
 	function _remove($rempath){
 		if (!is_dir($rempath)) {
@@ -22,7 +24,8 @@
 	}
 
 	function read_options() {
-		$settings_path = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'options'.DIRECTORY_SEPARATOR.'options.json';
+		$root = $_SERVER["DOCUMENT_ROOT"];
+		$settings_path = $root.'_adm/options/options.json';
 		$str = file_get_contents($settings_path);
 		$dt = get_object_vars(json_decode($str));
 		$dt['perm_files'] = intval($dt['perm_files'], 8);
@@ -33,7 +36,6 @@
 	$options = read_options();
 	$perm_folder = $options['perm_folder'];
 	
-	$root = $_SERVER["DOCUMENT_ROOT"].'/';
 	$pages_path = $root.$options['pages_path'];
 	
 	if( file_exists($pages_path) ) {
@@ -48,10 +50,11 @@
 	}
 	
 	/*
+
 	if( file_exists($pagePath) ) {
 		
 	}
-
+	
 	if( file_exists($pagePath) && is_dir($pagePath) ) {
 		if( isset( $_POST['action'] ) ){
 			$action = $_POST['action']; 
