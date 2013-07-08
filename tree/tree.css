@@ -59,7 +59,7 @@ ul.custom_tree_root li span.tree_leaf_status.loader{
 }
 ul.custom_tree_root li span.selected{
 	background: #C0C0C0;
-	border: 1px dotted gray;
+	border: 1px solid gray;
 	padding: 1px 8px 1px 8px;
 }
 ul.custom_tree_root li span.hover, ul.custom_tree_root li span.selected.hover{

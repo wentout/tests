@@ -162,7 +162,8 @@ $(function () {
 			])
 
 		.controller('PagesCtrl', ['$scope', function ($scope) {
-					$('#tree_content').height(currentHeight(true, 11)).customTree(tree);
+					$('#tree_content, #page_content').height(currentHeight(true, 20));
+					$('#tree_content').customTree(tree);
 				}
 			])
 
