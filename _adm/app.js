@@ -83,7 +83,7 @@ $(function () {
 
 	var tree = {
 		loader : function (path, callback) {
-			ajax('./api/tree/', function (obj) {
+			ajax('./api/tree/get/', function (obj) {
 				if (obj.error) {}
 				else {
 					callback(obj);
