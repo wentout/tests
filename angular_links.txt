@@ -3,3 +3,5 @@ http://habrahabr.ru/hub/angularjs/
 http://www.angular.ru/misc/started
 https://github.com/angular/angular.js/wiki/JSFiddle-Examples
 https://github.com/jmcunningham/AngularJS-Learning
+
+http://www.nganimate.org/

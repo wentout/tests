@@ -9,6 +9,9 @@ $(function () {
 		paths : {
 			locale : function () {
 				return './i18n/' + config.locale.name + '.js';
+			},
+			tree : {
+				get : './api/tree/get/'
 			}
 		},
 		links : {
@@ -83,7 +86,7 @@ $(function () {
 
 	var tree = {
 		loader : function (path, callback) {
-			ajax('./api/tree/get/', function (obj) {
+			ajax(config.paths.tree.get, function (obj) {
 				if (obj.error) {}
 				else {
 					callback(obj);
@@ -225,7 +228,16 @@ $(function () {
 						}
 					});
 				}
-			]);
+			])
+		.directive('ngHover', function () {
+			return function (scope, element) {
+				element.bind('mouseenter', function () {
+					element.addClass('hover');
+				}).bind('mouseleave', function () {
+					element.removeClass('hover');
+				})
+			}
+		});
 
 	angular.bootstrap($('#ng-app'), ['fineCutAdm']);
 
