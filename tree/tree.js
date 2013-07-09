@@ -484,6 +484,8 @@
 			},
 
 			getPath : getPath,
+			
+			loadLeaf: loadLeaf,
 
 			blur : blur,
 			focus : focus,

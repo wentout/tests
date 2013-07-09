@@ -2,18 +2,18 @@
 <div id = "page_container">
 	<div id = "tree_content" ng-hide = "hideTree()">&nbsp;</div>
 	<div id = "ctrl_content">
-		<button ng-hover><i class = "icon-leaf"></i></button>
-		<button ng-hover><i class = "icon-remove"></i></button>
+		<button ng-hover ng-click = "add()"><i class = "icon-leaf"></i></button>
+		<button ng-hover ng-click = "del()" ng-disabled = "pageIsFocused()"><i class = "icon-remove"></i></button>
 		<hr/>
 		<hr/>
-		<button ng-hover><i class = "icon-magnet"></i></button>
-		<button ng-hover><i class = "icon-share"></i></button>
+		<button ng-hover ng-click = "getMagnet()" ng-disabled = "pageIsFocused()"><i class = "icon-magnet"></i></button>
+		<button ng-hover ng-click = "share()" ng-disabled = "!hasMagnet()"><i class = "icon-share"></i></button>
 		<hr/>
 		<hr/>
-		<button ng-hover><i class = "icon-refresh"></i></button>
+		<button ng-hover ng-click = "refresh()"><i class = "icon-refresh"></i></button>
 		<hr/>
 		<hr/>
-		<button ng-hover><i class = "icon-check"></i></button>
+		<button ng-hover ng-click = "save()" ng-disabled = "pageIsFocused()"><i class = "icon-check"></i></button>
 		<hr/>
 		<hr/>
 		<button ng-hover ng-click = "treeIsHidden = !treeIsHidden"><i  class = "{{ treeIsHidden ? 'icon-eye-open' : 'icon-eye-close' }}"></i></button>
@@ -36,7 +36,7 @@
 					</div>
 					<div class = "control-group">
 						<label class = "control-label" for = "description">{{i18n.description}}</label>
-						<textarea rows = "{{model.description.length > 0 ? 5 : 3}}" id = "description" ng-model = "model.description" required></textarea>
+						<textarea rows = "{{model.description.length > 0 ? 3 : 2}}" id = "description" ng-model = "model.description" required></textarea>
 					</div>
 					<div class = "control-group">
 						<label class = "control-label" for = "header">{{i18n.header}}</label>
@@ -44,7 +44,7 @@
 					</div>
 				</div>
 				<div class = "tab-pane" id = "page_html">
-						<textarea rows = "25" ng-model = "model.page" required></textarea>
+						<textarea rows = "23" ng-model = "model.page" required></textarea>
 				</div>
 				<div class = "tab-pane" id = "page_settings">
 					<div class = "control-group">

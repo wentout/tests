@@ -10,23 +10,18 @@ $(function () {
 			locale : function () {
 				return './i18n/' + config.locale.name + '.js';
 			},
+			options : './options/',
 			tree : {
 				get : './api/tree/get/'
+			},
+			page : {
+				get : './api/page/get/',
+				set : './api/page/set/',
+				del : './api/page/del/'
 			}
 		},
 		links : {
-			main : ['pages', 'templates', 'files', 'settings'],
-			page : [{
-					name : 'head',
-					link : '/pages:head'
-				}, {
-					name : 'html',
-					link : '/pages:html'
-				}, {
-					name : 'settings',
-					link : '/pages:settings'
-				}
-			]
+			main : ['pages', 'templates', 'files', 'settings']
 		},
 		settings : null,
 		blank_page : {
@@ -36,8 +31,12 @@ $(function () {
 			pageIsCode : false,
 			header : '',
 			page : '',
-			props : {}
-		}
+			props : {},
+			template : 'default'
+		},
+		pageScope : null,
+		treeController : null,
+		pageIsFocused : null
 	};
 
 	var info = function (str, pre) {
@@ -48,6 +47,14 @@ $(function () {
 		} else {
 			to.html(str);
 		}
+	};
+
+	var jData = function (str) {
+		return js_beautify(JSON.stringify(str), {
+			indent_size : 1,
+			indent_char : '\t',
+			brace_style : 'collapse'
+		});
 	};
 
 	var ajax = function (path, success, opts) {
@@ -104,9 +111,34 @@ $(function () {
 
 	// var angular = angular.noConflict();
 
-	var tree = {
+	var parsePageModel = function (data, obj) {
+		if (!obj) {
+			var obj = config.blank_page;
+			if (data) {
+				obj = JSON.parse(data.model);
+				obj.page = data.page;
+			}
+		}
+		var $scope = config.pageScope;
+		if ($scope) {
+			$scope.model = obj;
+			if ($scope.$$childTail && $scope.$$childTail.model) {
+				$scope.$$childTail.model = obj;
+			}
+			// if ($scope.$$phase !== '$apply') {
+			try {
+				$scope.$digest();
+			} catch (e) {}
+			// }
+		}
+	};
+
+	var treeConfig = {
 		init : {
-			method : 'slideDown'
+			method : 'slideDown',
+			callback : function (controller, tree) {
+				config.treeController = controller;
+			}
 		},
 		loader : function (path, callback) {
 			ajax(config.paths.tree.get, function (obj) {
@@ -120,8 +152,27 @@ $(function () {
 				},
 				async : true
 			});
+		},
+		handlers : {
+			focus : function (leaf, controller) {
+				var path = controller.getPath(leaf);
+				ajax(config.paths.page.get, function (data) {
+					config.pageIsFocused = leaf;
+					parsePageModel(data);
+				}, {
+					data : {
+						leaf : JSON.stringify(path)
+					}
+				});
+			},
+			blur : function () {
+				config.pageIsFocused = null;
+				parsePageModel();
+			}
 		}
 	};
+
+	var magnet = null;
 
 	var app = angular.module('fineCutAdm', [])
 
@@ -137,18 +188,6 @@ $(function () {
 						controller : 'MainTabCtrl'
 					})
 					.when('/pages', {
-						templateUrl : 'parts/pages.html',
-						controller : 'PagesCtrl'
-					})
-					.when('/pages:head', {
-						templateUrl : 'parts/pages.html',
-						controller : 'PagesCtrl'
-					})
-					.when('/pages:html', {
-						templateUrl : 'parts/pages.html',
-						controller : 'PagesCtrl'
-					})
-					.when('/pages:settings', {
 						templateUrl : 'parts/pages.html',
 						controller : 'PagesCtrl'
 					})
@@ -218,10 +257,102 @@ $(function () {
 									$('div.custom_tree_root_container').fadeIn();
 								});
 							}
+						},
+						add : function () {
+							if (config.treeController) {
+								var prt = prompt('Leaf name (url).', 'test');
+								if (prt) {
+									var leaf = config.treeController.x.current;
+									var path = config.treeController.getPath(leaf);
+									path.push(prt);
+									$scope.save(path, function () {
+										$scope.refresh(leaf, function () {
+											$.each(leaf.items, function (index, item) {
+												if (item.name === prt) {
+													config.treeController.blur();
+													config.treeController.focus(item);
+													return false;
+												}
+											});
+										});
+									});
+								}
+							}
+						},
+						del : function () {
+							if (config.treeController) {
+								var leaf = config.treeController.x.current;
+								if (leaf.parent.name) {
+									config.treeController.focus(leaf.parent);
+								} else {
+									config.treeController.blur();
+								}
+								var path = config.treeController.getPath(leaf);
+								ajax(config.paths.page.del, function (data) {
+									$scope.refresh(leaf.parent);
+								}, {
+									data : {
+										leaf : JSON.stringify(path)
+									},
+									async : true
+								});
+							}
+						},
+						refresh : function (leaf, callback) {
+							var p = leaf || config.treeController.x.current;
+							path = config.treeController.getPath(p);
+							if (path.length > 1) {
+								config.treeController.loadLeaf(p, callback);
+							} else {
+								config.treeController.init();
+							}
+						},
+						save : function (path, callback) {
+							if (config.treeController) {
+								if (!path) {
+									path = config.treeController.getPath(config.treeController.x.current);
+								}
+								if (path.length > 1) {
+									var model = $scope.$$childTail ? $scope.$$childTail.model : $scope.model;
+									var page = '' + model.page;
+									delete model.page;
+									ajax(config.paths.page.set, function (data) {
+										parsePageModel(data);
+										callback && callback();
+									}, {
+										data : {
+											model : jData(model),
+											page : page,
+											leaf : JSON.stringify(path)
+										},
+										async : true
+									});
+								}
+							}
+						},
+						share : function () {
+							parsePageModel(null, magnet);
+						},
+						getMagnet : function () {
+							var model = $scope.$$childTail ? $scope.$$childTail.model : $scope.model;
+							magnet = model;
+						},
+						hasMagnet : function () {
+							if (magnet) {
+								return true;
+							}
+							return false;
+						},
+						pageIsFocused : function () {
+							if (config.pageIsFocused) {
+								return false;
+							}
+							return true;
 						}
 					});
 					$('#tree_content, #page_content').height(currentHeight(true, 40));
-					$('#tree_content').customTree(tree);
+					$('#tree_content').customTree(treeConfig);
+					config.pageScope = $scope;
 				}
 			])
 
@@ -234,7 +365,7 @@ $(function () {
 			])
 
 		.controller('SettingsCtrl', ['$scope', function ($scope) {
-					ajax('./options/', function (obj) {
+					ajax(config.paths.options, function (obj) {
 						config.settings = obj;
 					}, {
 						data : {
@@ -256,7 +387,8 @@ $(function () {
 						},
 						save : function () {
 							var pages = [];
-							$.map($scope.$$childTail.model.pages, function (item, index) {
+							var model = $scope.$$childTail ? $scope.$$childTail.model : $scope.model;
+							$.map(model.pages, function (item, index) {
 								if (angular.isString(item.domain) && angular.isString(item.page) && item.domain.length > 0 && item.page.length > 0) {
 									pages.push({
 										domain : item.domain,
@@ -266,7 +398,7 @@ $(function () {
 							});
 							var model = $scope.model;
 							model.pages = pages;
-							ajax('./options/', function (obj) {
+							ajax(config.paths.options, function (obj) {
 								if (obj.pages) {
 									$scope.$$childTail.model = $scope.model = obj;
 									$scope.$digest();
@@ -276,14 +408,10 @@ $(function () {
 							}, {
 								data : {
 									action : 'set',
-									data : js_beautify(JSON.stringify(model), {
-										indent_size : 1,
-										indent_char : '\t',
-										brace_style : 'collapse'
-									})
+									data : jData(model)
 								},
 								async : true
-							})
+							});
 						}
 					});
 				}

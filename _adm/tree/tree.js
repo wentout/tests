@@ -209,13 +209,13 @@
 			}
 		};
 
-		var blur = function (callback) {
+		var blur = function (callback, leaf) {
 			if (x.current.parent) {
 				var fn = function () {
 					x.current.els.text.removeClass(x.cls.selected);
 					setTextHtml(x.current);
 					handle(x.current, 'blur');
-					x.current = tree;
+					x.current = leaf || tree;
 					callback && callback();
 				};
 				if (x.handlers && x.handlers.beforeblur) {
@@ -484,6 +484,8 @@
 			},
 
 			getPath : getPath,
+			
+			loadLeaf: loadLeaf,
 
 			blur : blur,
 			focus : focus,
