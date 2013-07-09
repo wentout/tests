@@ -162,6 +162,7 @@ $(function () {
 			])
 
 		.controller('PagesCtrl', ['$scope', function ($scope) {
+					$scope.treeIsHidden = false;
 					$('#tree_content, #page_content').height(currentHeight(true, 20));
 					$('#tree_content').customTree(tree);
 				}

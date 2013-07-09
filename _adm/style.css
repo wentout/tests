@@ -22,10 +22,9 @@ input:focus, textarea:focus {
 }
 
 #page_container {
-	display: table;
 	min-height: 350px;
-	min-width: 850px;
-	padding: 0px 50px 0px 10px;
+	min-width: 950px;
+	margin: 0px 10px 0px 10px;
 }
 #tree_content {
 	vertical-align: top;
@@ -37,7 +36,7 @@ input:focus, textarea:focus {
 #ctrl_content  {
 	vertical-align: top;
 	display: table-cell;
-	min-width: 35px;
+	width: 35px;
 }
 #ctrl_content  button {
 	line-height: 16px;
@@ -59,9 +58,9 @@ input:focus, textarea:focus {
 
 #page_content  {
 	border: 1px solid #C0C0C0;
-	min-width: 650px;
 	padding: 5px 15px 5px 15px;
 	display: table-cell;
+	width: 100%;
 }
 
 #FilesExplorerFrame {
