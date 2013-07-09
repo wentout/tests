@@ -15,9 +15,29 @@ $(function () {
 			}
 		},
 		links : {
-			main : ['pages', 'templates', 'files', 'settings']
+			main : ['pages', 'templates', 'files', 'settings'],
+			page : [{
+					name : 'head',
+					link : '/pages:head'
+				}, {
+					name : 'html',
+					link : '/pages:html'
+				}, {
+					name : 'settings',
+					link : '/pages:settings'
+				}
+			]
 		},
-		settings : null
+		settings : null,
+		blank_page : {
+			title : '',
+			keywords : '',
+			description : '',
+			pageIsCode : false,
+			header : '',
+			page : '',
+			props : {}
+		}
 	};
 
 	var info = function (str, pre) {
@@ -53,7 +73,7 @@ $(function () {
 				}
 			}
 		};
-		opts && ($.extend(obj, opts));
+		opts && ($.extend(true, obj, opts));
 		$.ajax(obj);
 
 	};
@@ -120,6 +140,18 @@ $(function () {
 						templateUrl : 'parts/pages.html',
 						controller : 'PagesCtrl'
 					})
+					.when('/pages:head', {
+						templateUrl : 'parts/pages.html',
+						controller : 'PagesCtrl'
+					})
+					.when('/pages:html', {
+						templateUrl : 'parts/pages.html',
+						controller : 'PagesCtrl'
+					})
+					.when('/pages:settings', {
+						templateUrl : 'parts/pages.html',
+						controller : 'PagesCtrl'
+					})
 					.when('/templates', {
 						templateUrl : './parts/templates.html',
 						controller : 'TemplatesCtrl'
@@ -144,7 +176,7 @@ $(function () {
 			])
 
 		.controller('BodyCtrl', ['$scope', '$location', function ($scope, $location, $locationProvider) {
-					$.extend($scope, {
+					$.extend(true, $scope, {
 						i18n : config.locale.body,
 						tabs : config.links.main,
 						$location : $location,
@@ -164,25 +196,31 @@ $(function () {
 		.controller('MainTabCtrl', ['$scope', function ($scope) {}
 			])
 
-		.controller('PagesCtrl', ['$scope', function ($scope) {
-					$scope.treeIsHidden = false;
-					$scope.hideTree = function () {
-						if ($scope.treeIsHidden) {
-							$('div.custom_tree_root_container').fadeOut(200, function () {
-								$('div.custom_tree_root_container').hide();
-							});
-							$('#tree_content').animate({
-								'minWidth' : '0px'
-							}, 500);
-						} else {
-							$('#tree_content').animate({
-								'minWidth' : '300px'
-							}, 500, function () {
-								$('div.custom_tree_root_container').fadeIn();
-							});
+		.controller('PagesCtrl', ['$scope', '$location', function ($scope, $location) {
+					$.extend(true, $scope, {
+						i18n : config.locale.page,
+						model : $.extend(true, {}, config.blank_page),
+						treeIsHidden : false,
+						$location : $location,
+						tabs : $.extend(true, {}, config.links.page),
+						hideTree : function () {
+							if ($scope.treeIsHidden) {
+								$('div.custom_tree_root_container').fadeOut(200, function () {
+									$('div.custom_tree_root_container').hide();
+								});
+								$('#tree_content').animate({
+									'minWidth' : '0px'
+								}, 500);
+							} else {
+								$('#tree_content').animate({
+									'minWidth' : '300px'
+								}, 500, function () {
+									$('div.custom_tree_root_container').fadeIn();
+								});
+							}
 						}
-					};
-					$('#tree_content, #page_content').height(currentHeight(true, 20));
+					});
+					$('#tree_content, #page_content').height(currentHeight(true, 40));
 					$('#tree_content').customTree(tree);
 				}
 			])
@@ -204,7 +242,7 @@ $(function () {
 						}
 					});
 
-					$.extend($scope, {
+					$.extend(true, $scope, {
 						i18n : config.locale.settings,
 						model : $.extend(true, {}, config.settings),
 						add : function () {

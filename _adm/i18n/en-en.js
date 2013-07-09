@@ -25,5 +25,17 @@
 		"path" : "Path For This Domain",
 		"add" : "Add New Domain",
 		"remove" : "x"
+	},
+	"page" : {
+		"title" : "Title",
+		"keywords" : "Keywords",
+		"description" : "Description",
+		"pageIsCode" : "Page Is Server Side Code (do not use template engine)",
+		"header" : "Header Addition",
+		"tabs":{
+			"head" : "Page Head",
+			"html" : "Page HTML",
+			"settings" : "Settings"
+		}
 	}
 }
