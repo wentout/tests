@@ -85,6 +85,9 @@ $(function () {
 	// var angular = angular.noConflict();
 
 	var tree = {
+		init : {
+			method : 'slideDown'
+		},
 		loader : function (path, callback) {
 			ajax(config.paths.tree.get, function (obj) {
 				if (obj.error) {}
@@ -163,6 +166,22 @@ $(function () {
 
 		.controller('PagesCtrl', ['$scope', function ($scope) {
 					$scope.treeIsHidden = false;
+					$scope.hideTree = function () {
+						if ($scope.treeIsHidden) {
+							$('div.custom_tree_root_container').fadeOut(200, function () {
+								$('div.custom_tree_root_container').hide();
+							});
+							$('#tree_content').animate({
+								'minWidth' : '0px'
+							}, 500);
+						} else {
+							$('#tree_content').animate({
+								'minWidth' : '300px'
+							}, 500, function () {
+								$('div.custom_tree_root_container').fadeIn();
+							});
+						}
+					};
 					$('#tree_content, #page_content').height(currentHeight(true, 20));
 					$('#tree_content').customTree(tree);
 				}

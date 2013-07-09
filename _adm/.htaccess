@@ -20,6 +20,7 @@ Options +Includes +FollowSymLinks -Indexes
 	ExpiresActive on
 	ExpiresByType image/jpeg "access plus 3 day"
 	ExpiresByType image/gif "access plus 3 day"
+	ExpiresByType image/png "access plus 3 day"
 </IfModule>
 
 <IfModule mod_rewrite.c>
