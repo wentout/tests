@@ -461,16 +461,6 @@
 
 				x.cls.supressTreeTextSelection && tree.els.children.addClass(x.cls.supressTreeTextSelection);
 
-				parseChildren(tree, obj, callback);
-
-			});
-		};
-
-		var init = function () {
-			loadMainLeaf(function () {
-
-				x.init.callback && x.init.callback(controller, tree);
-
 				tree.container.on('click', function (ev) {
 					// if (ev.target == tree.container[0])
 					if (x.blurFromContainerClick) {
@@ -483,6 +473,14 @@
 					}
 				});
 
+				parseChildren(tree, obj, callback);
+
+			});
+		};
+
+		var init = function () {
+			loadMainLeaf(function () {
+				x.init.callback && x.init.callback(controller, tree);
 			});
 		};
 

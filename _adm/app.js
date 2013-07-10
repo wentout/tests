@@ -38,8 +38,7 @@ $(function () {
 			template : 'default'
 		},
 		pageScope : null,
-		treeController : null,
-		pageIsFocused : null
+		treeController : null
 	};
 
 	var info = function (str, pre) {
@@ -85,7 +84,6 @@ $(function () {
 		};
 		opts && ($.extend(true, obj, opts));
 		$.ajax(obj);
-
 	};
 
 	ajax(config.paths.locale(), function (obj) {
@@ -131,6 +129,7 @@ $(function () {
 			pageDigest();
 		}
 	};
+
 	var pageDigest = function () {
 		try {
 			config.pageScope.$digest();
@@ -138,7 +137,7 @@ $(function () {
 	};
 
 	var treeConfig = {
-		focusParentOnClose: true,
+		focusParentOnClose : true,
 		init : {
 			method : 'slideDown',
 			auto : false
@@ -160,7 +159,6 @@ $(function () {
 			focus : function (leaf, controller) {
 				var path = controller.getPath(leaf);
 				ajax(config.paths.page.get, function (data) {
-					config.pageIsFocused = leaf;
 					parsePageModel(data);
 				}, {
 					data : {
@@ -169,7 +167,6 @@ $(function () {
 				});
 			},
 			blur : function () {
-				config.pageIsFocused = null;
 				parsePageModel();
 			},
 			open : function () {
@@ -295,7 +292,7 @@ $(function () {
 													return false;
 												}
 											});
-										});
+										}, true);
 									});
 								}
 							}
@@ -324,9 +321,9 @@ $(function () {
 							}
 							return true;
 						},
-						refresh : function (leaf, callback) {
+						refresh : function (leaf, callback, open) {
 							leaf = leaf || config.treeController.x.current;
-							config.treeController.refreshLeaf(leaf, callback);
+							config.treeController.refreshLeaf(leaf, callback, open);
 						},
 						save : function (path, callback) {
 							if (!path) {
@@ -363,7 +360,7 @@ $(function () {
 							return false;
 						},
 						pageIsFocused : function () {
-							if (config.pageIsFocused) {
+							if (config.treeController.x.current.parent == null) {
 								return false;
 							}
 							return true;
