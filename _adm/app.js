@@ -141,7 +141,8 @@ $(function () {
 			method : 'slideDown',
 			callback : function (controller, tree) {
 				config.treeController = controller;
-			}
+			},
+			auto: false
 		},
 		loader : function (path, callback) {
 			ajax(config.paths.tree.get, function (obj) {
@@ -264,21 +265,35 @@ $(function () {
 						add : function () {
 							if (config.treeController) {
 								var prt = prompt('Leaf name (url).', 'test');
-								if (prt) {
-									var leaf = config.treeController.x.current;
-									var path = config.treeController.getPath(leaf);
-									path.push(prt);
-									$scope.save(path, function () {
-										$scope.refresh(leaf, function () {
-											$.each(leaf.items, function (index, item) {
-												if (item.name === prt) {
-													config.treeController.blur();
-													config.treeController.focus(item);
-													return false;
-												}
+								var leaf = config.treeController.x.current;
+								var haveItem = false;
+								$.each(leaf.items, function (index, item) {
+									if (item.name === prt) {
+										haveItem = true;
+										return false;
+									}
+								});
+								if (haveItem) {
+									alert('There already is leaf with such name');
+									window.setTimeout(function () {
+										$scope.add();
+									}, 100);
+								} else {
+									if (prt) {
+										var path = config.treeController.getPath(leaf);
+										path.push(prt);
+										$scope.save(path, function () {
+											$scope.refresh(leaf, function () {
+												$.each(leaf.items, function (index, item) {
+													if (item.name === prt) {
+														config.treeController.blur();
+														config.treeController.focus(item);
+														return false;
+													}
+												});
 											});
 										});
-									});
+									}
 								}
 							}
 						},
@@ -302,13 +317,8 @@ $(function () {
 							}
 						},
 						refresh : function (leaf, callback) {
-							var p = leaf || config.treeController.x.current;
-							path = config.treeController.getPath(p);
-							if (path.length > 1) {
-								config.treeController.loadLeaf(p, callback);
-							} else {
-								config.treeController.init();
-							}
+							leaf = leaf || config.treeController.x.current;
+							config.treeController.loadLeaf(leaf, callback);
 						},
 						save : function (path, callback) {
 							if (config.treeController) {
@@ -354,7 +364,8 @@ $(function () {
 						}
 					});
 					$('#tree_content, #page_content').height(currentHeight(true, 40));
-					$('#tree_content').customTree(treeConfig);
+					var controller = $('#tree_content').customTree(treeConfig);
+					controller.init();
 					config.pageScope = $scope;
 				}
 			])
@@ -368,11 +379,11 @@ $(function () {
 			])
 
 		.controller('SettingsCtrl', ['$scope', function ($scope) {
-					
+
 					ajax(config.paths.options.get, function (obj) {
 						config.settings = obj;
 					}, {
-						method: 'GET'
+						method : 'GET'
 					});
 
 					$.extend(true, $scope, {

@@ -23,7 +23,8 @@
 			preloader : 'preloader',
 			// function (controller, tree)
 			callback : null,
-			method : 'fadeIn'
+			method : 'fadeIn',
+			auto : true
 
 		},
 
@@ -209,13 +210,13 @@
 			}
 		};
 
-		var blur = function (callback) {
+		var blur = function (callback, leaf) {
 			if (x.current.parent) {
 				var fn = function () {
 					x.current.els.text.removeClass(x.cls.selected);
 					setTextHtml(x.current);
 					handle(x.current, 'blur');
-					x.current = tree;
+					x.current = leaf || tree;
 					callback && callback();
 				};
 				if (x.handlers && x.handlers.beforeblur) {
@@ -443,49 +444,75 @@
 
 		};
 
+		var loadMainLeaf = function (callback) {
+			x.container.empty();
+
+			x.init.preloader && (x.container.addClass(x.init.preloader));
+
+			loader([x.root], function (obj) {
+
+				x.init.preloader && (x.container.removeClass(x.init.preloader));
+
+				tree.els = {};
+				var childrenCls = x.theme + '_' + x.cls.root;
+				var containerCls = childrenCls + '_' + x.cls.container;
+				tree.container = $(x.html.container).addClass(containerCls).appendTo(x.container);
+				tree.els.children = $(x.html.tree).addClass(childrenCls).appendTo(tree.container);
+
+				x.cls.supressTreeTextSelection && tree.els.children.addClass(x.cls.supressTreeTextSelection);
+
+				parseChildren(tree, obj, callback);
+
+			});
+		};
+
+		var init = function () {
+			loadMainLeaf(function () {
+
+				x.init.callback && x.init.callback(controller, tree);
+
+				tree.container.on('click', function (ev) {
+					// if (ev.target == tree.container[0])
+					if (x.blurFromContainerClick) {
+						blur();
+					}
+				});
+				tree.container.on('dblclick', function (ev) {
+					if (x.blurFromContainerDblClick) {
+						blur();
+					}
+				});
+
+			});
+		};
+
+		// tree startup
+		var makeInit = function () {
+			try {
+				window.setTimeout(function () {
+					init();
+				}, x.init.delay);
+
+			} catch (e) {
+				log(e.stack || e);
+			}
+		};
+
 		var controller = {
 
-			init : function (callback) {
-
-				x.container.empty();
-
-				x.init.preloader && (x.container.addClass(x.init.preloader));
-
-				loader([x.root], function (obj) {
-
-					x.init.preloader && (x.container.removeClass(x.init.preloader));
-
-					tree.els = {};
-					var childrenCls = x.theme + '_' + x.cls.root;
-					var containerCls = childrenCls + '_' + x.cls.container;
-					tree.container = $(x.html.container).addClass(containerCls).appendTo(x.container);
-					tree.els.children = $(x.html.tree).addClass(childrenCls).appendTo(tree.container);
-
-					x.cls.supressTreeTextSelection && tree.els.children.addClass(x.cls.supressTreeTextSelection);
-
-					x.init.callback && x.init.callback(controller, tree);
-
-					parseChildren(tree, obj);
-
-					tree.container.on('click', function (ev) {
-						// if (ev.target == tree.container[0])
-						if (x.blurFromContainerClick) {
-							blur();
-						}
-					});
-					tree.container.on('dblclick', function (ev) {
-						if (x.blurFromContainerDblClick) {
-							blur();
-						}
-					});
-
-				})
-
-			},
-
 			getPath : getPath,
-			
-			loadLeaf: loadLeaf,
+
+			init : makeInit,
+
+			loadLeaf : function (leaf, callback) {
+				if (leaf.parent == null) {
+					loadMainLeaf(callback);
+				} else {
+					if (leaf.open) {
+						loadLeaf(leaf, callback);
+					}
+				}
+			},
 
 			blur : blur,
 			focus : focus,
@@ -494,15 +521,10 @@
 
 		};
 
-		try {
-
-			// tree startup
-			window.setTimeout(function () {
-				controller.init();
-			}, x.init.delay);
-
-		} catch (e) {
-			log(e.stack || e);
+		if (x.init.auto) {
+			makeInit();
+		} else {
+			return controller;
 		}
 
 	};
