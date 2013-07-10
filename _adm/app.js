@@ -10,7 +10,10 @@ $(function () {
 			locale : function () {
 				return './i18n/' + config.locale.name + '.js';
 			},
-			options : './options/',
+			options : {
+				get : './options/get/',
+				set : './options/set/'
+			},
 			tree : {
 				get : './api/tree/get/'
 			},
@@ -365,12 +368,11 @@ $(function () {
 			])
 
 		.controller('SettingsCtrl', ['$scope', function ($scope) {
-					ajax(config.paths.options, function (obj) {
+					
+					ajax(config.paths.options.get, function (obj) {
 						config.settings = obj;
 					}, {
-						data : {
-							action : 'get'
-						}
+						method: 'GET'
 					});
 
 					$.extend(true, $scope, {
@@ -398,7 +400,7 @@ $(function () {
 							});
 							var model = $scope.model;
 							model.pages = pages;
-							ajax(config.paths.options, function (obj) {
+							ajax(config.paths.options.set, function (obj) {
 								if (obj.pages) {
 									$scope.$$childTail.model = $scope.model = obj;
 									$scope.$digest();
@@ -407,7 +409,6 @@ $(function () {
 								}
 							}, {
 								data : {
-									action : 'set',
 									data : jData(model)
 								},
 								async : true
