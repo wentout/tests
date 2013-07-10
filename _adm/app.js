@@ -128,21 +128,20 @@ $(function () {
 			if ($scope.$$childTail && $scope.$$childTail.model) {
 				$scope.$$childTail.model = obj;
 			}
-			// if ($scope.$$phase !== '$apply') {
-			try {
-				$scope.$digest();
-			} catch (e) {}
-			// }
+			pageDigest();
 		}
+	};
+	var pageDigest = function () {
+		try {
+			config.pageScope.$digest();
+		} catch (e) {}
 	};
 
 	var treeConfig = {
+		focusParentOnClose: true,
 		init : {
 			method : 'slideDown',
-			callback : function (controller, tree) {
-				config.treeController = controller;
-			},
-			auto: false
+			auto : false
 		},
 		loader : function (path, callback) {
 			ajax(config.paths.tree.get, function (obj) {
@@ -172,6 +171,12 @@ $(function () {
 			blur : function () {
 				config.pageIsFocused = null;
 				parsePageModel();
+			},
+			open : function () {
+				pageDigest();
+			},
+			close : function () {
+				pageDigest();
 			}
 		}
 	};
@@ -263,84 +268,85 @@ $(function () {
 							}
 						},
 						add : function () {
-							if (config.treeController) {
-								var prt = prompt('Leaf name (url).', 'test');
-								var leaf = config.treeController.x.current;
-								var haveItem = false;
-								$.each(leaf.items, function (index, item) {
-									if (item.name === prt) {
-										haveItem = true;
-										return false;
-									}
-								});
-								if (haveItem) {
-									alert('There already is leaf with such name');
-									window.setTimeout(function () {
-										$scope.add();
-									}, 100);
-								} else {
-									if (prt) {
-										var path = config.treeController.getPath(leaf);
-										path.push(prt);
-										$scope.save(path, function () {
-											$scope.refresh(leaf, function () {
-												$.each(leaf.items, function (index, item) {
-													if (item.name === prt) {
-														config.treeController.blur();
-														config.treeController.focus(item);
-														return false;
-													}
-												});
+							var prt = prompt('Leaf name (url).', 'test');
+							var leaf = config.treeController.x.current;
+							var haveItem = false;
+							$.each(leaf.items, function (index, item) {
+								if (item.name === prt) {
+									haveItem = true;
+									return false;
+								}
+							});
+							if (haveItem) {
+								alert('There already is leaf with such name');
+								window.setTimeout(function () {
+									$scope.add();
+								}, 100);
+							} else {
+								if (prt) {
+									var path = config.treeController.getPath(leaf);
+									path.push(prt);
+									$scope.save(path, function () {
+										$scope.refresh(leaf, function () {
+											$.each(leaf.items, function (index, item) {
+												if (item.name === prt) {
+													config.treeController.blur();
+													config.treeController.focus(item);
+													return false;
+												}
 											});
 										});
-									}
+									});
 								}
 							}
 						},
 						del : function () {
-							if (config.treeController) {
-								var leaf = config.treeController.x.current;
-								if (leaf.parent.name) {
-									config.treeController.focus(leaf.parent);
-								} else {
-									config.treeController.blur();
-								}
-								var path = config.treeController.getPath(leaf);
-								ajax(config.paths.page.del, function (data) {
-									$scope.refresh(leaf.parent);
+							var leaf = config.treeController.x.current;
+							if (leaf.parent.name) {
+								config.treeController.focus(leaf.parent);
+							} else {
+								config.treeController.blur();
+							}
+							var path = config.treeController.getPath(leaf);
+							ajax(config.paths.page.del, function (data) {
+								$scope.refresh(leaf.parent);
+							}, {
+								data : {
+									leaf : JSON.stringify(path)
+								},
+								async : true
+							});
+						},
+						canRefresh : function () {
+							var leaf = config.treeController.x.current;
+							if (leaf.folder && leaf.open) {
+								return false;
+							}
+							return true;
+						},
+						refresh : function (leaf, callback) {
+							leaf = leaf || config.treeController.x.current;
+							config.treeController.refreshLeaf(leaf, callback);
+						},
+						save : function (path, callback) {
+							if (!path) {
+								path = config.treeController.getPath(config.treeController.x.current);
+							}
+							if (path.length > 1) {
+								var model = $scope.$$childTail ? $scope.$$childTail.model : $scope.model;
+								var page = '' + model.page;
+								delete model.page;
+								ajax(config.paths.page.set, function (data) {
+									parsePageModel(data);
+									callback && callback();
 								}, {
 									data : {
+										model : jData(model),
+										page : page,
 										leaf : JSON.stringify(path)
 									},
 									async : true
 								});
-							}
-						},
-						refresh : function (leaf, callback) {
-							leaf = leaf || config.treeController.x.current;
-							config.treeController.loadLeaf(leaf, callback);
-						},
-						save : function (path, callback) {
-							if (config.treeController) {
-								if (!path) {
-									path = config.treeController.getPath(config.treeController.x.current);
-								}
-								if (path.length > 1) {
-									var model = $scope.$$childTail ? $scope.$$childTail.model : $scope.model;
-									var page = '' + model.page;
-									delete model.page;
-									ajax(config.paths.page.set, function (data) {
-										parsePageModel(data);
-										callback && callback();
-									}, {
-										data : {
-											model : jData(model),
-											page : page,
-											leaf : JSON.stringify(path)
-										},
-										async : true
-									});
-								}
 							}
 						},
 						share : function () {
@@ -350,7 +356,7 @@ $(function () {
 							var model = $scope.$$childTail ? $scope.$$childTail.model : $scope.model;
 							magnet = model;
 						},
-						hasMagnet : function () {
+						canShare : function () {
 							if (magnet) {
 								return true;
 							}
@@ -364,8 +370,8 @@ $(function () {
 						}
 					});
 					$('#tree_content, #page_content').height(currentHeight(true, 40));
-					var controller = $('#tree_content').customTree(treeConfig);
-					controller.init();
+					config.treeController = $('#tree_content').customTree(treeConfig);
+					config.treeController.init();
 					config.pageScope = $scope;
 				}
 			])

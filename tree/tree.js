@@ -502,13 +502,11 @@
 
 			getPath : getPath,
 
-			init : makeInit,
-
-			loadLeaf : function (leaf, callback) {
+			refreshLeaf : function (leaf, callback, andOpen) {
 				if (leaf.parent == null) {
 					loadMainLeaf(callback);
 				} else {
-					if (leaf.open) {
+					if (leaf.open || andOpen) {
 						loadLeaf(leaf, callback);
 					}
 				}
@@ -524,6 +522,7 @@
 		if (x.init.auto) {
 			makeInit();
 		} else {
+			controller.init = makeInit;
 			return controller;
 		}
 
