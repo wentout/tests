@@ -16,7 +16,7 @@
 						if(strrpos($value, $pages_path) !== false){
 							$intarr = explode($pages_path, $value);
 							$cnt = count($intarr);
-							for ($i = 1; $i <= $cnt; $i++) {
+							for ($i = 1; $i < $cnt; $i++) {
 								$elstr = $pages_path.$intarr[$i];
 								if($elstr !== $pages_path){
 									$str .= $elstr;
