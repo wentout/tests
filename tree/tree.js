@@ -445,6 +445,7 @@
 		};
 
 		var loadMainLeaf = function (callback) {
+		
 			x.container.empty();
 
 			x.init.preloader && (x.container.addClass(x.init.preloader));
@@ -452,35 +453,44 @@
 			loader([x.root], function (obj) {
 
 				x.init.preloader && (x.container.removeClass(x.init.preloader));
-
-				tree.els = {};
 				var childrenCls = x.theme + '_' + x.cls.root;
 				var containerCls = childrenCls + '_' + x.cls.container;
+
+				tree.els = {};
 				tree.container = $(x.html.container).addClass(containerCls).appendTo(x.container);
 				tree.els.children = $(x.html.tree).addClass(childrenCls).appendTo(tree.container);
 
 				x.cls.supressTreeTextSelection && tree.els.children.addClass(x.cls.supressTreeTextSelection);
 
-				tree.container.on('click', function (ev) {
-					// if (ev.target == tree.container[0])
-					if (x.blurFromContainerClick) {
-						blur();
-					}
-				});
-				tree.container.on('dblclick', function (ev) {
-					if (x.blurFromContainerDblClick) {
-						blur();
-					}
-				});
-
 				parseChildren(tree, obj, callback);
 
 			});
+			
 		};
 
 		var init = function () {
 			loadMainLeaf(function () {
+
 				x.init.callback && x.init.callback(controller, tree);
+
+				x.container.on('click', x.container, function (ev) {
+					if (x.blurFromContainerClick) {
+						blur(function(){
+							x.current = tree;
+							handle(tree, 'focus');
+						});
+					}
+				});
+
+				x.container.on('dblclick', x.container, function (ev) {
+					if (x.blurFromContainerDblClick) {
+						blur(function(){
+							x.current = tree;
+							handle(tree, 'focus');
+						});
+					}
+				});
+
 			});
 		};
 
@@ -500,7 +510,7 @@
 
 			getPath : getPath,
 
-			refreshLeaf : function (leaf, callback, andOpen) {
+			refresh : function (leaf, callback, andOpen) {
 				if (leaf.parent == null) {
 					loadMainLeaf(callback);
 				} else {

@@ -130,10 +130,20 @@ $(function () {
 		}
 	};
 
+	var pageDigestCounter = 0;
 	var pageDigest = function () {
-		try {
-			config.pageScope.$digest();
-		} catch (e) {}
+		pageDigestCounter++;
+		var buffer = 0 + pageDigestCounter;
+		window.setTimeout(function () {
+			if (buffer == pageDigestCounter) {
+				pageDigestCounter = 0;
+				try {
+					config.pageScope.$digest();
+				} catch (e) {
+					debugger;
+				}
+			}
+		}, 10);
 	};
 
 	var treeConfig = {
@@ -157,14 +167,18 @@ $(function () {
 		},
 		handlers : {
 			focus : function (leaf, controller) {
-				var path = controller.getPath(leaf);
-				ajax(config.paths.page.get, function (data) {
-					parsePageModel(data);
-				}, {
-					data : {
-						leaf : JSON.stringify(path)
-					}
-				});
+				if (leaf.parent) {
+					var path = controller.getPath(leaf);
+					ajax(config.paths.page.get, function (data) {
+						parsePageModel(data);
+					}, {
+						data : {
+							leaf : JSON.stringify(path)
+						}
+					});
+				} else {
+					pageDigest();
+				}
 			},
 			blur : function () {
 				parsePageModel();
@@ -317,13 +331,13 @@ $(function () {
 						canRefresh : function () {
 							var leaf = config.treeController.x.current;
 							if (leaf.folder && leaf.open) {
-								return false;
+								return true;
 							}
-							return true;
+							return false;
 						},
 						refresh : function (leaf, callback, open) {
 							leaf = leaf || config.treeController.x.current;
-							config.treeController.refreshLeaf(leaf, callback, open);
+							config.treeController.refresh(leaf, callback, open);
 						},
 						save : function (path, callback) {
 							if (!path) {
@@ -346,18 +360,18 @@ $(function () {
 								});
 							}
 						},
+						canShare : function () {
+							if (magnet) {
+								return true;
+							}
+							return false;
+						},
 						share : function () {
 							parsePageModel(null, magnet);
 						},
 						getMagnet : function () {
 							var model = $scope.$$childTail ? $scope.$$childTail.model : $scope.model;
 							magnet = model;
-						},
-						canShare : function () {
-							if (magnet) {
-								return true;
-							}
-							return false;
 						},
 						pageIsFocused : function () {
 							if (config.treeController.x.current.parent == null) {

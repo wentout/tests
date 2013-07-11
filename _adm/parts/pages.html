@@ -3,17 +3,17 @@
 	<div id = "tree_content" ng-hide = "hideTree()">&nbsp;</div>
 	<div id = "ctrl_content">
 		<button ng-hover ng-click = "add()"><i class = "icon-leaf"></i></button>
-		<button ng-hover ng-click = "del()" ng-disabled = "pageIsFocused()"><i class = "icon-remove"></i></button>
+		<button ng-hover ng-click = "del()" ng-disabled = "!pageIsFocused()"><i class = "icon-remove"></i></button>
 		<hr/>
 		<hr/>
-		<button ng-hover ng-click = "getMagnet()" ng-disabled = "pageIsFocused()"><i class = "icon-magnet"></i></button>
-		<button ng-hover ng-click = "share()" ng-disabled = "canShare()"><i class = "icon-share"></i></button>
+		<button ng-hover ng-click = "getMagnet()" ng-disabled = "!pageIsFocused()"><i class = "icon-magnet"></i></button>
+		<button ng-hover ng-click = "share()" ng-disabled = "!canShare()"><i class = "icon-share"></i></button>
 		<hr/>
 		<hr/>
-		<button ng-hover ng-click = "refresh()" ng-disabled = "canRefresh()"><i class = "icon-refresh"></i></button>
+		<button ng-hover ng-click = "refresh()" ng-disabled = "!canRefresh()"><i class = "icon-refresh"></i></button>
 		<hr/>
 		<hr/>
-		<button ng-hover ng-click = "save()" ng-disabled = "pageIsFocused()"><i class = "icon-check"></i></button>
+		<button ng-hover ng-click = "save()" ng-disabled = "!pageIsFocused()"><i class = "icon-check"></i></button>
 		<hr/>
 		<hr/>
 		<button ng-hover ng-click = "treeIsHidden = !treeIsHidden"><i  class = "{{ treeIsHidden ? 'icon-eye-open' : 'icon-eye-close' }}"></i></button>
