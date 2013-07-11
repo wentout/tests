@@ -149,17 +149,11 @@ $(function () {
 		}, 10);
 	};
 
-	var focus = null;
-	ajax(config.paths.page.focus, function (data) {
-		focus = data;
-	});
-
 	var treeConfig = {
 		focusParentOnClose : true,
 		init : {
 			method : 'slideDown',
-			auto : false,
-			focus : focus
+			auto : false
 		},
 		loader : function (path, callback) {
 			ajax(config.paths.tree.get, function (obj) {
@@ -399,6 +393,9 @@ $(function () {
 						}
 					});
 					$('#tree_content, #page_content').height(currentHeight(true, 40));
+					ajax(config.paths.page.focus, function (data) {
+						treeConfig.init.focus = data;
+					});
 					config.treeController = $('#tree_content').customTree(treeConfig);
 					config.treeController.init();
 					config.pageScope = $scope;
