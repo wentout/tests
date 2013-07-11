@@ -15,12 +15,15 @@ $(function () {
 				set : './options/set/'
 			},
 			tree : {
-				get : './api/tree/get/'
+				get : './api/tree/get/',
+				close : './api/tree/close/',
 			},
 			page : {
 				get : './api/page/get/',
 				set : './api/page/set/',
-				del : './api/page/del/'
+				del : './api/page/del/',
+				focus : './api/page/getfocus',
+				blur : './api/page/blur/'
 			}
 		},
 		links : {
@@ -59,7 +62,7 @@ $(function () {
 		});
 	};
 
-	var ajax = function (path, success, opts) {
+	var ajax = function (path, successCallback, opts) {
 		var obj = {
 			type : "POST",
 			async : false,
@@ -67,14 +70,14 @@ $(function () {
 			url : path,
 			success : function (data) {
 				if (data) {
-					if (success) {
+					if (successCallback) {
 						try {
 							var obj = $.parseJSON(data);
 						} catch (e) {
 							info(data + '<hr>' + e.stack || e, true);
 						}
 						if (obj) {
-							success(obj);
+							successCallback(obj);
 						}
 					}
 				} else {
@@ -146,11 +149,17 @@ $(function () {
 		}, 10);
 	};
 
+	var focus = null;
+	ajax(config.paths.page.focus, function (data) {
+		focus = data;
+	});
+
 	var treeConfig = {
 		focusParentOnClose : true,
 		init : {
 			method : 'slideDown',
-			auto : false
+			auto : false,
+			focus : focus
 		},
 		loader : function (path, callback) {
 			ajax(config.paths.tree.get, function (obj) {
@@ -178,15 +187,24 @@ $(function () {
 					});
 				} else {
 					pageDigest();
+					ajax(config.paths.page.blur, null, {
+						method : 'GET'
+					});
 				}
 			},
-			blur : function () {
+			blur : function (leaf) {
 				parsePageModel();
 			},
 			open : function () {
 				pageDigest();
 			},
-			close : function () {
+			close : function (leaf, controller) {
+				var path = controller.getPath(leaf);
+				ajax(config.paths.tree.close, function (data) {}, {
+					data : {
+						leaf : JSON.stringify(path)
+					}
+				});
 				pageDigest();
 			}
 		}

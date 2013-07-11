@@ -24,7 +24,8 @@
 			// function (controller, tree)
 			callback : null,
 			method : 'fadeIn',
-			auto : true
+			auto : true,
+			focus : null
 
 		},
 
@@ -229,6 +230,7 @@
 			}
 		};
 		var focus = function (leaf) {
+			x.init.focus = null;
 			leaf.els.text.addClass(x.cls.selected);
 			x.current = leaf;
 			setTextHtml(x.current);
@@ -359,6 +361,13 @@
 			leaf.heading = makeEl('heading').append(els.control, els.status, els.text, els.children);
 			leaf.container = makeEl('leaf').append(leaf.heading);
 			leaf.container.appendTo(leaf.parent.els.children);
+
+			if (x.init.focus) {
+				if (JSON.stringify(getPath(leaf)) == JSON.stringify(x.init.focus)) {
+					focus(leaf);
+				}
+			}
+
 		};
 
 		var emptyLeaf = function (leaf, callback) {
@@ -445,7 +454,7 @@
 		};
 
 		var loadMainLeaf = function (callback) {
-		
+
 			x.container.empty();
 
 			x.init.preloader && (x.container.addClass(x.init.preloader));
@@ -465,17 +474,15 @@
 				parseChildren(tree, obj, callback);
 
 			});
-			
+
 		};
 
 		var init = function () {
 			loadMainLeaf(function () {
 
-				x.init.callback && x.init.callback(controller, tree);
-
 				x.container.on('click', x.container, function (ev) {
 					if (x.blurFromContainerClick) {
-						blur(function(){
+						blur(function () {
 							x.current = tree;
 							handle(tree, 'focus');
 						});
@@ -484,12 +491,14 @@
 
 				x.container.on('dblclick', x.container, function (ev) {
 					if (x.blurFromContainerDblClick) {
-						blur(function(){
+						blur(function () {
 							x.current = tree;
 							handle(tree, 'focus');
 						});
 					}
 				});
+
+				x.init.callback && x.init.callback(controller, tree);
 
 			});
 		};

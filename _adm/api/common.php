@@ -3,7 +3,7 @@
 	// setlocale(LC_ALL, '');
 	// mb_internal_encoding("UTF-8");
 
-	$root = $_SERVER['DOCUMENT_ROOT'].'/';
+	$root = $_SERVER['DOCUMENT_ROOT'];
 	
 	function _remove($rempath){
 		if (!is_dir($rempath)) {

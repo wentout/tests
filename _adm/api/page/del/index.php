@@ -6,7 +6,9 @@
 		if(file_exists($pages_path) && is_dir($pages_path)){
 			_remove($pages_path);
 		}
-		echo '{"success":true}';
+		echo json_encode(array(
+			'success' => true
+		));
 	}
 
 ?>
