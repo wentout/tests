@@ -8,13 +8,13 @@
 		if(file_exists($statePath)){
 			$state = file_get_contents($statePath);
 			if(strrpos($state, $page_path) !== false){
-				$arr = explode($page_path, $state, 10000);
+				$arr = explode($page_path, $state);
 				if($arr){
 					_remove($statePath);
 					$str = '';
 					foreach ($arr as &$value) {
 						if(strrpos($value, $pages_path) !== false){
-							$intarr = explode($pages_path, $value, 10000);
+							$intarr = explode($pages_path, $value);
 							$cnt = count($intarr);
 							for ($i = 1; $i <= $cnt; $i++) {
 								$elstr = $pages_path.$intarr[$i];

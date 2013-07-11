@@ -274,22 +274,6 @@ $(function () {
 						treeIsHidden : false,
 						$location : $location,
 						tabs : $.extend(true, {}, config.links.page),
-						hideTree : function () {
-							if ($scope.treeIsHidden) {
-								$('div.custom_tree_root_container').fadeOut(200, function () {
-									$('div.custom_tree_root_container').hide();
-								});
-								$('#tree_content').animate({
-									'minWidth' : '0px'
-								}, 500);
-							} else {
-								$('#tree_content').animate({
-									'minWidth' : '300px'
-								}, 500, function () {
-									$('div.custom_tree_root_container').fadeIn();
-								});
-							}
-						},
 						add : function () {
 							var prt = prompt('Leaf name (url).', 'test');
 							var leaf = config.treeController.x.current;
@@ -396,9 +380,105 @@ $(function () {
 					ajax(config.paths.page.focus, function (data) {
 						treeConfig.init.focus = data;
 					});
-					config.treeController = $('#tree_content').customTree(treeConfig);
+
+					var tree_content = $('#tree_content');
+					config.treeController = tree_content.customTree(treeConfig);
 					config.treeController.init();
 					config.pageScope = $scope;
+
+					var rEl = $('#tree_content_resize');
+					var w = 0;
+					var dLeft = 0;
+					if ($.fn.draggable) {
+						
+						rEl.draggable({
+							axis : "x",
+							// distance : 20,
+							delay : 300,
+							start : function (ev) {
+								// dLeft = rEl.offset().left;
+								dLeft = ev.pageX;
+								w = parseInt(tree_content.css('minWidth'));
+								var ww = tree_content.width();
+								if (ww > w) {
+									w = ww;
+									tree_content.css('minWidth', ww + 'px');
+								}
+							},
+							drag : function (ev, e1) {},
+							stop : function (ev) {
+								var diff = dLeft - ev.pageX;
+								var end = w;
+								if (diff > 0) {
+									end = w - diff;
+								} else {
+									end = w + diff;
+								}
+								tree_content.css('minWidth', (w - diff) + 'px');
+								$('#tree_content_resize').css({
+									'left' : 0
+								});
+							}
+						});
+						
+					} else {
+
+						var dragging = false;
+						var draggingoff = false;
+						var stopDrag = function () {
+							dragging = false;
+							draggingoff = false;
+						};
+						rEl.addClass('unselectable');
+						rEl.on('mousedown', function () {
+							dragging = true;
+							dLeft = rEl.offset().left;
+							w = parseInt(tree_content.css('minWidth'));
+							var ww = tree_content.width();
+							if (ww > w) {
+								w = ww;
+								tree_content.css('minWidth', ww + 'px');
+
+							}
+						})
+						.on('mouseup', function () {
+							dragging = false;
+						})
+						.on('mouseout', function () {
+							if (dragging) {
+								draggingoff = true;
+								window.setTimeout(function () {
+									if (draggingoff) {
+										stopDrag();
+									}
+								}, 1000);
+							}
+						})
+						.on('mouseover', function () {
+							if (draggingoff) {
+								dragging = true;
+							}
+						});
+						$(document.body).on('mousemove', function (ev) {
+							if (dragging) {
+								var diff = dLeft - ev.pageX;
+								var end = w;
+								if (diff > 0) {
+									end = w - diff;
+								} else {
+									end = w + diff;
+								}
+								tree_content.css('minWidth', (w - diff) + 'px');
+							}
+						}).
+						on('mouseup', function () {
+							if (dragging) {
+								stopDrag();
+							}
+						});
+						
+					}
+
 				}
 			])
 
