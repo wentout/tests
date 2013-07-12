@@ -41,7 +41,10 @@ $(function () {
 			template : 'default'
 		},
 		pageScope : null,
-		treeController : null
+		treeController : null,
+		props : {
+			pageBorder : 'PageController_PageBorder'
+		}
 	};
 
 	var info = function (str, pre) {
@@ -203,6 +206,39 @@ $(function () {
 			}
 		}
 	};
+
+	var ls = {
+		get : function (prop) {
+			var item = window.localStorage.getItem('Fine Cut LS');
+			var obj = null;
+			if (item) {
+				try {
+					obj = JSON.parse(item);
+					if (prop) {
+						return obj[prop];
+					}
+				} catch (e) {
+					window.localStorage.removeItem('Fine Cut LS');
+				}
+			}
+			return obj;
+		},
+		set : function (prop, value) {
+			var obj = ls.get() || {};
+			obj[prop] = value;
+			window.localStorage.setItem('Fine Cut LS', JSON.stringify(obj));
+		},
+		setPageBorder : function (w) {
+			ls.set('pageBorderWidth', w);
+		},
+		getPageBorder : function () {
+			return ls.get().pageBorderWidth;
+		}
+	};
+
+	if (!ls.get(config.props.pageBorder)) {
+		!ls.set(config.props.pageBorder, '300px');
+	}
 
 	var magnet = null;
 
@@ -386,11 +422,13 @@ $(function () {
 					config.treeController.init();
 					config.pageScope = $scope;
 
+					tree_content.css('minWidth', ls.get(config.props.pageBorder));
+
 					var rEl = $('#tree_content_resize');
 					var w = 0;
 					var dLeft = 0;
 					if ($.fn.draggable) {
-						
+
 						rEl.draggable({
 							axis : "x",
 							// distance : 20,
@@ -414,13 +452,15 @@ $(function () {
 								} else {
 									end = w + diff;
 								}
-								tree_content.css('minWidth', (w - diff) + 'px');
+								var pw = (w - diff) + 'px';
+								tree_content.css('minWidth', pw);
+								tree_content.css('minWidth', ls.set(config.props.pageBorder, pw));
 								$('#tree_content_resize').css({
 									'left' : 0
 								});
 							}
 						});
-						
+
 					} else {
 
 						var dragging = false;
@@ -476,7 +516,7 @@ $(function () {
 								stopDrag();
 							}
 						});
-						
+
 					}
 
 				}

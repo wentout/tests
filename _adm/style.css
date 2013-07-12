@@ -38,6 +38,8 @@ input:focus, textarea:focus {
 #tree_content_resize {
 	display: table-cell;
 	min-width: 5px;
+	max-width: 5px;
+	width: 5px;
 	background: #D0D0D0;
 	cursor: w-resize;
 }
@@ -69,7 +71,7 @@ input:focus, textarea:focus {
 	padding: 17px 25px 9px 25px;
 	display: table-cell;
 	width: 100%;
-	min-width: 550px;
+	min-width: 50%;
 }
 #page_content input[type="text"], #page_content textarea {
 	width: 97%;
