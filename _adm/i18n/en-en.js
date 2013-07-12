@@ -30,7 +30,7 @@
 		"title" : "Title",
 		"keywords" : "Keywords",
 		"description" : "Description",
-		"pageIsCode" : "Page Is Server Side Code (do not use template engine)",
+		"pageIsCode" : "Page Is Server Side Code (do not use static casche sub-system)",
 		"header" : "Header Addition",
 		"tabs":{
 			"head" : "Page Head",

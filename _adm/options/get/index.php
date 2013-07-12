@@ -1,6 +1,10 @@
 <?php
 
 	$path = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'options.json';
-	readfile($path);
+	if(file_exists($path)){
+		readfile($path);
+	} else {
+		echo '"{}"';
+	}
 
 ?>

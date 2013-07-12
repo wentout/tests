@@ -21,12 +21,18 @@
 	</div>
 	<div id = "page_content">
 			<ul class = "nav nav-tabs">
-				<li class = "active"><a href = "#page_head" data-toggle = "tab">{{i18n.tabs.head}}</a></li>
-				<li><a href = "#page_html" data-toggle = "tab">{{i18n.tabs.html}}</a></li>
-				<li><a href = "#page_settings" data-toggle = "tab">{{i18n.tabs.settings}}</a></li>
+				<li class = "{{activeTab('page_head')}}" ng-click = "setActiveTab('page_head')">
+					<a href = "#page_head" data-toggle = "tab">{{i18n.tabs.head}}</a>
+				</li>
+				<li class = "{{activeTab('page_html')}}" ng-click = "setActiveTab('page_html')">
+					<a href = "#page_html" data-toggle = "tab">{{i18n.tabs.html}}</a>
+				</li>
+				<li class = "{{activeTab('page_settings')}}"ng-click = "setActiveTab('page_settings')">
+					<a href = "#page_settings" data-toggle = "tab">{{i18n.tabs.settings}}</a>
+				</li>
 			</ul>
 			<div class="tab-content">
-				<div class = "tab-pane active" id = "page_head">
+				<div class = "tab-pane {{activeTab('page_head')}}" id = "page_head">
 					<div class = "control-group">
 						<label class = "control-label" for = "title">{{i18n.title}}</label>
 						<input type = "text" id = "title" ng-model = "model.title" required>
@@ -44,10 +50,10 @@
 						<textarea rows = "{{model.header.length > 0 ? 7 : 3}}" id = "header" ng-model = "model.header" required></textarea>
 					</div>
 				</div>
-				<div class = "tab-pane" id = "page_html">
+				<div class = "tab-pane {{activeTab('page_html')}}" id = "page_html">
 						<textarea rows = "23" ng-model = "model.page" required></textarea>
 				</div>
-				<div class = "tab-pane" id = "page_settings">
+				<div class = "tab-pane {{activeTab('page_settings')}}" id = "page_settings">
 					<div class = "control-group">
 						<label for = "pageIsCode" class = "checkbox">
 							<input type = "checkbox" id = "pageIsCode" ng-model = "model.pageIsCode">

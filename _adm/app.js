@@ -43,7 +43,9 @@ $(function () {
 		pageScope : null,
 		treeController : null,
 		props : {
-			pageBorder : 'PageController_PageBorder'
+			pageBorder : 'PageController_PageBorder',
+			activeTab : 'PageController_ActiveTab'
+
 		}
 	};
 
@@ -239,7 +241,10 @@ $(function () {
 	if (!ls.get(config.props.pageBorder)) {
 		!ls.set(config.props.pageBorder, '300px');
 	}
-
+	if (!ls.get(config.props.activeTab)) {
+		!ls.set(config.props.activeTab, 'page_head');
+	}
+	
 	var magnet = null;
 
 	var app = angular.module('fineCutAdm', [])
@@ -410,7 +415,17 @@ $(function () {
 								return false;
 							}
 							return true;
+						},
+						setActiveTab : function (target) {
+							ls.set(config.props.activeTab, target);
+						},
+						activeTab : function (target) {
+							if (ls.get(config.props.activeTab) == target) {
+								return 'active';
+							}
+							return '';
 						}
+
 					});
 					$('#tree_content, #page_content').height(currentHeight(true, 40));
 					ajax(config.paths.page.focus, function (data) {
@@ -454,7 +469,7 @@ $(function () {
 								}
 								var pw = (w - diff) + 'px';
 								tree_content.css('minWidth', pw);
-								tree_content.css('minWidth', ls.set(config.props.pageBorder, pw));
+								ls.set(config.props.pageBorder, pw);
 								$('#tree_content_resize').css({
 									'left' : 0
 								});

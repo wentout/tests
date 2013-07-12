@@ -6,12 +6,6 @@
 	"perm_files": "0644",
 	"fileNameEncoding": "UTF-8",
 	"microtimeEcho": true,
-	"pages": [{
-		"domain": "finecut-new:82",
-		"page": "pages"
-	}, {
-		"domain": "finecut-new:82",
-		"page": "pages"
-	}],
+	"pages": [],
 	"pages_path": "pages"
 }
