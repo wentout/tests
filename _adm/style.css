@@ -43,19 +43,10 @@ input:focus, textarea:focus {
 	background: #D0D0D0;
 	cursor: w-resize;
 }
-/* ul.custom_tree_root span.tree_control.sortbl, ul.custom_tree_root span.tree_control.folder.sortbl { */
-/*
-ul.custom_tree_root li:hover > div > span.tree_control {
-	background: #F0F0F0;
-	cursor: ns-resize;
-	padding: 1px 7px 1px 11px;
-	-moz-border-radius: 3px; 
-	-webkit-border-radius: 3px; 
-	-khtml-border-radius: 3px; 
-	border-radius: 3px;
-	display: inline-block;
+ul.custom_tree_root li span.tree_control, ul.custom_tree_root li span.tree_control.folder{
+	cursor: default;
+	padding: 0px 9px 0px 9px;
 }
- */
 
 #ctrl_content  {
 	vertical-align: top;

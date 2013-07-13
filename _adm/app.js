@@ -220,6 +220,7 @@ $(function () {
 						} else {
 							leaf.parent.els.children.sortable({
 								axis : 'y',
+								distance : 5,
 								containment : '.custom_tree_root',
 								update : function (event, ui) {
 									// debugger;
@@ -253,7 +254,7 @@ $(function () {
 						addClasses : false,
 						revert : true,
 						distance : 11,
-						zIndex: 100,
+						zIndex : 100,
 						start : function () {
 							// config.treeController.blur();
 							// config.treeController.focus(leaf);
