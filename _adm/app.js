@@ -205,6 +205,90 @@ $(function () {
 					}
 				});
 				pageDigest();
+			},
+			deleted : function (leaf) {
+				if ((leaf.parent.items.length < 2) && (leaf.parent.els.children.hasClass('ui-sortable'))) {
+					leaf.parent.els.children.sortable('destroy');
+				}
+			},
+			added : function (leaf, controller) {
+				if ($.fn.draggable && $.fn.droppable && $.fn.sortable) {
+
+					if (leaf.parent.items.length > 1) {
+						if (leaf.parent.els.children.hasClass('ui-sortable')) {
+							leaf.parent.els.children.sortable('refresh');
+						} else {
+							leaf.parent.els.children.sortable({
+								axis : 'y',
+								containment : '.custom_tree_root',
+								update : function (event, ui) {
+									// debugger;
+									return false;
+								}
+							});
+						}
+
+					}
+
+					// leaf.els.control
+					// .on('mouseover', controller.x.container, function () {
+					// $(this).addClass('sortbl');
+					// })
+					// .on('mouseout', controller.x.container, function () {
+					// $(this).removeClass('sortbl');
+					// });
+
+					leaf.els.text
+					.on('mouseup', function (ev) {
+						if (leaf.els.text.prop('dropped')) {
+							debugger;
+							ev.stopPropagation();
+							ev.preventDefault();
+							return false;
+						}
+					})
+					.prop('leaf', leaf)
+					.prop('dropped', null)
+					.draggable({
+						addClasses : false,
+						revert : true,
+						distance : 11,
+						zIndex: 100,
+						start : function () {
+							// config.treeController.blur();
+							// config.treeController.focus(leaf);
+						},
+						stop : function () {
+							var dropped = leaf.els.text.prop('dropped');
+							if (dropped) {
+								if (leaf.parent == dropped) {
+									confirm('Move up ?');
+								} else {
+									if (leaf.parent == dropped.parent) {
+										confirm('Move to this position ?');
+									} else {
+										confirm('Move here ?');
+									}
+								}
+								leaf.els.text.prop('dropped', null);
+							} else {
+								confirm('Move to root ?');
+							}
+							// leaf.els.text.animate({
+							// top : 0,
+							// left : 0
+							// }, 200);
+						}
+					})
+					.droppable({
+						addClasses : false,
+						accept : 'span.tree_leaf_text',
+						drop : function (event, ui) {
+							ui.draggable.prop('dropped', leaf);
+						}
+					});
+
+				}
 			}
 		}
 	};
@@ -244,7 +328,7 @@ $(function () {
 	if (!ls.get(config.props.activeTab)) {
 		!ls.set(config.props.activeTab, 'page_head');
 	}
-	
+
 	var magnet = null;
 
 	var app = angular.module('fineCutAdm', [])
@@ -381,8 +465,12 @@ $(function () {
 								path = config.treeController.getPath(config.treeController.x.current);
 							}
 							if (path.length > 1) {
-								var model = $scope.$$childTail ? $scope.$$childTail.model : $scope.model;
-								var page = '' + model.page;
+								var page = '';
+								var model = $.extend(true, {}, config.blank_page);
+								if (config.treeController.x.current.parent == null) {
+									var model = $.extend(true, {}, ($scope.$$childTail ? $scope.$$childTail.model : $scope.model));
+									var page = '' + model.page;
+								}
 								delete model.page;
 								ajax(config.paths.page.set, function (data) {
 									parsePageModel(data);
@@ -407,7 +495,7 @@ $(function () {
 							parsePageModel(null, magnet);
 						},
 						getMagnet : function () {
-							var model = $scope.$$childTail ? $scope.$$childTail.model : $scope.model;
+							var model = $.extend(true, {}, ($scope.$$childTail ? $scope.$$childTail.model : $scope.model));
 							magnet = model;
 						},
 						pageIsFocused : function () {
@@ -458,7 +546,7 @@ $(function () {
 									tree_content.css('minWidth', ww + 'px');
 								}
 							},
-							drag : function (ev, e1) {},
+							drag : function (ev) {},
 							stop : function (ev) {
 								var diff = dLeft - ev.pageX;
 								var end = w;
@@ -483,6 +571,7 @@ $(function () {
 						var stopDrag = function () {
 							dragging = false;
 							draggingoff = false;
+							// jqUI $('#container').enableSelection();
 						};
 						rEl.addClass('unselectable');
 						rEl.on('mousedown', function () {
@@ -495,6 +584,7 @@ $(function () {
 								tree_content.css('minWidth', ww + 'px');
 
 							}
+							// jqUI $('#container').disableSelection();
 						})
 						.on('mouseup', function () {
 							dragging = false;
@@ -567,7 +657,7 @@ $(function () {
 						},
 						save : function () {
 							var pages = [];
-							var model = $scope.$$childTail ? $scope.$$childTail.model : $scope.model;
+							var model = $.extend(true, {}, ($scope.$$childTail ? $scope.$$childTail.model : $scope.model));
 							$.map(model.pages, function (item, index) {
 								if (angular.isString(item.domain) && angular.isString(item.page) && item.domain.length > 0 && item.page.length > 0) {
 									pages.push({
@@ -576,7 +666,7 @@ $(function () {
 									});
 								}
 							});
-							var model = $scope.model;
+							var model = $.extend(true, {}, $scope.model);
 							model.pages = pages;
 							ajax(config.paths.options.set, function (obj) {
 								if (obj.pages) {
