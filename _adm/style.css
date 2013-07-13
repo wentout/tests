@@ -43,10 +43,6 @@ input:focus, textarea:focus {
 	background: #D0D0D0;
 	cursor: w-resize;
 }
-ul.custom_tree_root li span.tree_control, ul.custom_tree_root li span.tree_control.folder{
-	cursor: default;
-	padding: 0px 9px 0px 9px;
-}
 
 #ctrl_content  {
 	vertical-align: top;
