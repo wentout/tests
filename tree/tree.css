@@ -37,6 +37,9 @@ ul.custom_tree_root li span.tree_control{
 	width: 11px;
 	margin: 0px;
 	padding: 0px 7px 0px 7px;
+	cursor: default;
+}
+ul.custom_tree_root li span.tree_control.folder{
 	cursor: pointer;
 }
 ul.custom_tree_root li span.tree_leaf_text{

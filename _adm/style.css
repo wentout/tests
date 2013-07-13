@@ -3,6 +3,9 @@ body {
 	font-family: Tahoma;
 	overflow-y: scroll;
 }
+button, button.btn {
+	cursor: default;
+}
 
 /* ie focusing elements */
 input:focus, textarea:focus {
@@ -43,7 +46,7 @@ input:focus, textarea:focus {
 	background: #D0D0D0;
 	cursor: w-resize;
 }
-button, button.btn {
+ul.custom_tree_root li span.tree_control.folder{
 	cursor: default;
 }
 #ctrl_content  {
