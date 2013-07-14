@@ -9,7 +9,7 @@
 		if( isset( $leaf[0] ) ){
 			if( $leaf[0] == 'top' ){
 				if( count($leaf) > 1){
-					$pages_path = $pages_path.implode('/', array_slice($leaf, 1)).'/';
+					$page_path = $pages_path.implode('/', array_slice($leaf, 1)).'/';
 				}
 				$gonext = true;
 			}

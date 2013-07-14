@@ -4,13 +4,13 @@
 	
 	if($gonext){
 		
-		if(file_exists($pages_path)){
-			if(!is_dir($pages_path)){
-				_remove($pages_path);
-				mkdir( $pages_path , $perm_folder ) or die ( '{"error":"Can\'t create pages path."}' );
+		if(file_exists($page_path)){
+			if(!is_dir($page_path)){
+				_remove($page_path);
+				mkdir( $page_path , $perm_folder ) or die ( '{"error":"Can\'t create pages path."}' );
 			}
 		} else {
-			mkdir( $pages_path , $perm_folder ) or die ( '{"error":"Can\'t create pages path."}' );
+			mkdir( $page_path , $perm_folder ) or die ( '{"error":"Can\'t create pages path."}' );
 		}
 		
 		$model = '';
@@ -22,12 +22,12 @@
 			$page = $_POST['page'];
 		}
 		
-		$fh = fopen($pages_path.'model.json', 'w') or die("can't open file");
+		$fh = fopen($page_path.'model.json', 'w') or die("can't open file");
 		fwrite( $fh, $model );
 		@chmod( $fh, $perm_files );
 		fclose($fh);
 
-		$fh = fopen($pages_path.'page.txt', 'w') or die("can't open file");
+		$fh = fopen($page_path.'page.txt', 'w') or die("can't open file");
 		fwrite( $fh, $page );
 		@chmod( $fh, $perm_files );
 		fclose($fh);
