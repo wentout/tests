@@ -46,8 +46,23 @@
 			$order_path = $page_path.'/order.json';
 			if(file_exists($order_path)){
 				$order = json_decode(file_get_contents($order_path));
+				$pre = array();
 				
-				var_dump($order);
+				foreach ($order as $value) {
+					$pre[$value] = $value;
+				}
+				
+				$result = array_merge($pre, $arr);
+				// var_dump($result);
+				
+				$stack = array();
+				foreach ($result as $key => $value) {
+					if(is_array($value)){
+						$stack[$key] = $value;
+					}
+				}
+				
+				echo json_encode ($stack);
 				
 			} else {
 				echo json_encode ($arr);
