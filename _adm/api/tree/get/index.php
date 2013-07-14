@@ -45,6 +45,7 @@
 			
 			$order_path = $page_path.'/order.json';
 			if(file_exists($order_path)){
+				
 				$order = json_decode(file_get_contents($order_path));
 				$pre = array();
 				
@@ -55,14 +56,17 @@
 				$result = array_merge($pre, $arr);
 				// var_dump($result);
 				
+				$orders = array();
 				$stack = array();
 				foreach ($result as $key => $value) {
 					if(is_array($value)){
 						$stack[$key] = $value;
+						array_push($orders, $key);
 					}
 				}
 				
 				echo json_encode ($stack);
+				@file_put_contents( $order_path, json_encode ($orders) );
 				
 			} else {
 				echo json_encode ($arr);

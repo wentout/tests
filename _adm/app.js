@@ -25,6 +25,7 @@ $(function () {
 				focus : './api/page/getfocus',
 				blur : './api/page/blur/',
 				order : './api/page/order/',
+				rename : './api/page/rename/'
 			}
 		},
 		links : {
@@ -224,8 +225,6 @@ $(function () {
 								distance : 5,
 								containment : '.custom_tree_root',
 								update : function (event, ui) {
-									leaf.parent;
-									// var parent = leaf.parent.els.children[0];
 									var parent = event.target;
 									var order = [];
 									$.each(parent.children, function (index, item) {
@@ -458,6 +457,41 @@ $(function () {
 								async : true
 							});
 						},
+						rename : function () {
+							var leaf = config.treeController.x.current;
+							var name = prompt('New name?', leaf.name);
+							var oldname = '' + leaf.name;
+							if (name && (name !== '') && (name !== leaf.name)) {
+								var path = config.treeController.getPath(leaf);
+								var parent = leaf.parent;
+								ajax(config.paths.page.rename, function (data) {
+									$scope.refresh(parent, function () {
+										if (parent.children[name]) {
+											config.treeController.focus(parent.children[name]);
+										} else {
+											if (parent.children[oldname]) {
+												alert('ups...');
+												config.treeController.focus(parent.children[oldname]);
+											}
+										}
+									});
+								}, {
+									data : {
+										leaf : JSON.stringify(path),
+										name : name
+									},
+									async : false,
+									error : function (data) {
+										alert('ups...');
+										$scope.refresh(parent, function () {
+											if (parent.children[oldname]) {
+												config.treeController.focus(parent.children[oldname]);
+											}
+										});
+									}
+								});
+							}
+						},
 						canRefresh : function () {
 							var leaf = config.treeController.x.current;
 							if (leaf.folder && leaf.open) {
@@ -476,10 +510,8 @@ $(function () {
 							if (path.length > 1) {
 								var page = '';
 								var model = $.extend(true, {}, config.blank_page);
-								if (config.treeController.x.current.parent == null) {
-									var model = $.extend(true, {}, ($scope.$$childTail ? $scope.$$childTail.model : $scope.model));
-									var page = '' + model.page;
-								}
+								var model = $.extend(true, model, ($scope.$$childTail ? $scope.$$childTail.model : $scope.model));
+								var page = '' + model.page;
 								delete model.page;
 								ajax(config.paths.page.set, function (data) {
 									parsePageModel(data);

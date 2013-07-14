@@ -4,7 +4,8 @@
 	<div id = "tree_content_resize" ng-hide = "treeIsHidden"></div>
 	<div id = "ctrl_content" class = "unselectable">
 		<button ng-hover ng-click = "add()" ng-disabled = "!canAdd()"><i class = "icon-leaf"></i></button>
-		<button ng-hover ng-click = "del()" ng-disabled = "!pageIsFocused()"><i class = "icon-remove"></i></button>
+		<button ng-hover ng-click = "del()" ng-disabled = "!pageIsFocused()"><i class = "icon-trash"></i></button>
+		<button ng-hover ng-click = "rename()" ng-disabled = "!pageIsFocused()"><i class = "icon-pencil"></i></button>
 		<hr/>
 		<hr/>
 		<button ng-hover ng-click = "getMagnet()" ng-disabled = "!pageIsFocused()"><i class = "icon-magnet"></i></button>
