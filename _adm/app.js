@@ -23,7 +23,8 @@ $(function () {
 				set : './api/page/set/',
 				del : './api/page/del/',
 				focus : './api/page/getfocus',
-				blur : './api/page/blur/'
+				blur : './api/page/blur/',
+				order : './api/page/order/',
 			}
 		},
 		links : {
@@ -223,30 +224,41 @@ $(function () {
 								distance : 5,
 								containment : '.custom_tree_root',
 								update : function (event, ui) {
-									// debugger;
-									return false;
+									leaf.parent;
+									// var parent = leaf.parent.els.children[0];
+									var parent = event.target;
+									var order = [];
+									$.each(parent.children, function (index, item) {
+										order.push(item.leaf.name);
+									});
+									var callback = false;
+									ajax(config.paths.page.order, function (obj) {
+										if (obj.error) {
+											callback = false;
+										} else {
+											callback = true;
+										}
+									}, {
+										data : {
+											leaf : JSON.stringify(config.treeController.getPath(leaf.parent)),
+											order : JSON.stringify(order)
+										}
+									});
+									return callback;
 								}
 							});
 						}
 
 					}
 
-					// leaf.els.control
-					// .on('mouseover', controller.x.container, function () {
-					// $(this).addClass('sortbl');
-					// })
-					// .on('mouseout', controller.x.container, function () {
-					// $(this).removeClass('sortbl');
-					// });
-
+					leaf.container.prop('leaf', leaf);
 					leaf.els.text
 					.on('mouseup', function (ev) {
-						if (leaf.els.text.prop('dropped')) {
-							debugger;
-							ev.stopPropagation();
-							ev.preventDefault();
-							return false;
-						}
+						// if (leaf.els.text.prop('dropped')) {
+						// ev.stopPropagation();
+						// ev.preventDefault();
+						// return false;
+						// }
 					})
 					.prop('leaf', leaf)
 					.prop('dropped', null)
@@ -258,6 +270,7 @@ $(function () {
 						start : function () {
 							// config.treeController.blur();
 							// config.treeController.focus(leaf);
+							leaf.els.text.prop('dropped', true);
 						},
 						stop : function () {
 							var dropped = leaf.els.text.prop('dropped');
@@ -401,28 +414,23 @@ $(function () {
 						$location : $location,
 						tabs : $.extend(true, {}, config.links.page),
 						add : function () {
-							var prt = prompt('Leaf name (url).', 'test');
+							var name = prompt('Leaf name (url).', 'test');
 							var leaf = config.treeController.x.current;
 							var haveItem = false;
-							$.each(leaf.items, function (index, item) {
-								if (item.name === prt) {
-									haveItem = true;
-									return false;
-								}
-							});
-							if (haveItem) {
+							if (leaf.children[name]) {
+								// todo: maybe to add() to leaf parent in this situation?
 								alert('There already is leaf with such name');
 								window.setTimeout(function () {
 									$scope.add();
 								}, 100);
 							} else {
-								if (prt) {
+								if (name) {
 									var path = config.treeController.getPath(leaf);
-									path.push(prt);
+									path.push(name);
 									$scope.save(path, function () {
 										$scope.refresh(leaf, function () {
 											$.each(leaf.items, function (index, item) {
-												if (item.name === prt) {
+												if (item.name === name) {
 													config.treeController.blur();
 													config.treeController.focus(item);
 													return false;
@@ -485,6 +493,13 @@ $(function () {
 									async : true
 								});
 							}
+						},
+						canAdd : function () {
+							var leaf = config.treeController.x.current;
+							if (leaf.folder && leaf.open == false) {
+								return false;
+							}
+							return true;
 						},
 						canShare : function () {
 							if (magnet) {

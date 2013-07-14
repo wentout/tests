@@ -42,7 +42,16 @@
 			}
 			closedir($dh);
 			file_put_contents($statePath, $state);
-			echo json_encode ($arr);
+			
+			$order_path = $page_path.'/order.json';
+			if(file_exists($order_path)){
+				$order = json_decode(file_get_contents($order_path));
+				
+				var_dump($order);
+				
+			} else {
+				echo json_encode ($arr);
+			}
 		}
 	}
 

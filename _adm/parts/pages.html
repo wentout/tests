@@ -3,7 +3,7 @@
 	<div id = "tree_content" ng-hide = "treeIsHidden">&nbsp;</div>
 	<div id = "tree_content_resize" ng-hide = "treeIsHidden"></div>
 	<div id = "ctrl_content" class = "unselectable">
-		<button ng-hover ng-click = "add()"><i class = "icon-leaf"></i></button>
+		<button ng-hover ng-click = "add()" ng-disabled = "!canAdd()"><i class = "icon-leaf"></i></button>
 		<button ng-hover ng-click = "del()" ng-disabled = "!pageIsFocused()"><i class = "icon-remove"></i></button>
 		<hr/>
 		<hr/>
