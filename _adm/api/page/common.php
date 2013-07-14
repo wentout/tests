@@ -3,6 +3,7 @@
 	include(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'common.php');
 
 	$gonext = false;
+	$leaf = array();
 	if( isset( $_POST['leaf'] ) ){
 		$leaf = json_decode($_POST['leaf']);
 		if( isset( $leaf[0] ) ){

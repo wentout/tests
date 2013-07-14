@@ -2,23 +2,11 @@
 	
 	include(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'common.php');
 	
-	$statePath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'state.txt';
-	$state = '';
-	if(file_exists($statePath)){
-		$state = file_get_contents($statePath);
-	}
-	
 	if($gonext){
 		if ($dh = opendir($page_path)) {
 			$arr = array();
 			while (($entry = readdir($dh)) !== false) {
 				if( $entry != "." && $entry != ".." ) {
-					// folder open
-					if($page_path !== $pages_path){
-						if(strrpos($state, $page_path) === false){
-							$state .= $page_path;
-						}
-					}
 					if( is_dir( $page_path.$entry ) ) {
 						$arr[$entry] = array(
 							'folder' => false
@@ -26,13 +14,18 @@
 						if ($handleF = opendir($page_path.'/'.$entry)) {
 							while (false !== ($entryF = readdir($handleF))) {
 								if( $entryF != "." && $entryF != ".." ){
-									if( is_dir( $page_path.'/'.$entry.'/'.$entryF) ) {
+									
+									if( is_dir( $page_path.'/'.$entry.'/'.$entryF ) ) {
 										$arr[$entry]['folder'] = true;
-										// echo '>>'.$state.'||'.$page_path.$entry.'/';
-										if(strrpos($state, $page_path.$entry.'/') !== false){
+										
+										$state_path = $page_path.$entry.'/open.txt';
+										$arr[$entry]['state'] = $state_path;
+										if(file_exists($state_path)){
 											$arr[$entry]['open'] = true;
 										}
+										
 										break;
+										
 									}
 								}
 							}
@@ -41,8 +34,10 @@
 				}
 			}
 			closedir($dh);
-			file_put_contents($statePath, $state);
 			
+			$state_path = $page_path.'/open.txt';
+			file_put_contents($state_path, '');
+
 			$order_path = $page_path.'/order.json';
 			if(file_exists($order_path)){
 				

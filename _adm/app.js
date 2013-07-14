@@ -460,36 +460,44 @@ $(function () {
 						rename : function () {
 							var leaf = config.treeController.x.current;
 							var name = prompt('New name?', leaf.name);
+							var parent = leaf.parent;
 							var oldname = '' + leaf.name;
 							if (name && (name !== '') && (name !== leaf.name)) {
-								var path = config.treeController.getPath(leaf);
-								var parent = leaf.parent;
-								ajax(config.paths.page.rename, function (data) {
-									$scope.refresh(parent, function () {
-										if (parent.children[name]) {
-											config.treeController.focus(parent.children[name]);
-										} else {
-											if (parent.children[oldname]) {
-												alert('ups...');
-												config.treeController.focus(parent.children[oldname]);
-											}
-										}
-									});
-								}, {
-									data : {
-										leaf : JSON.stringify(path),
-										name : name
-									},
-									async : false,
-									error : function (data) {
-										alert('ups...');
+								if (parent.children[name]) {
+									alert('There already is leaf with such name.');
+									window.setTimeout(function () {
+										$scope.rename();
+									}, 100);
+								} else {
+
+									var path = config.treeController.getPath(leaf);
+									ajax(config.paths.page.rename, function (data) {
 										$scope.refresh(parent, function () {
-											if (parent.children[oldname]) {
-												config.treeController.focus(parent.children[oldname]);
+											if (parent.children[name]) {
+												config.treeController.focus(parent.children[name]);
+											} else {
+												if (parent.children[oldname]) {
+													alert('ups...');
+													config.treeController.focus(parent.children[oldname]);
+												}
 											}
 										});
-									}
-								});
+									}, {
+										data : {
+											leaf : JSON.stringify(path),
+											name : name
+										},
+										async : false,
+										error : function (data) {
+											alert('ups...');
+											$scope.refresh(parent, function () {
+												if (parent.children[oldname]) {
+													config.treeController.focus(parent.children[oldname]);
+												}
+											});
+										}
+									});
+								}
 							}
 						},
 						canRefresh : function () {

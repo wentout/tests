@@ -1,7 +1,7 @@
 <?php
 	
-	// setlocale(LC_ALL, '');
-	// mb_internal_encoding("UTF-8");
+	@setlocale(LC_ALL, '');
+	@mb_internal_encoding("UTF-8");
 
 	$root = $_SERVER['DOCUMENT_ROOT'];
 	
