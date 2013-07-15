@@ -7,7 +7,7 @@
 		if(isset($_POST['order'])){
 			$order = $_POST['order'];
 		
-			$fh = fopen($page_path.'order.json', 'w') or die("can't open file");
+			$fh = fopen($page_path.'/order.json', 'w') or die("can't open file");
 			fwrite( $fh, $order );
 			@chmod( $fh, $perm_files );
 			fclose($fh);

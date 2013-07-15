@@ -4,6 +4,7 @@
 
 	$gonext = false;
 	$leaf = array();
+	$page_path = $pages_path;
 	if( isset( $_POST['leaf'] ) ){
 		$leaf = json_decode($_POST['leaf']);
 		if( isset( $leaf[0] ) ){

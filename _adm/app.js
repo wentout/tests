@@ -278,7 +278,36 @@ $(function () {
 									confirm('Move up ?');
 								} else {
 									if (leaf.parent == dropped.parent) {
-										confirm('Move to this position ?');
+
+										var children = leaf.parent.els.children.children();
+
+										var order = [];
+										$.each(children, function (index, item) {
+											if (item.leaf.name !== leaf.name) {
+												if (item.leaf.name == dropped.name) {
+													order.push(leaf.name);
+													order.push(dropped.name);
+												} else {
+													order.push(item.leaf.name);
+												}
+											}
+										});
+										ajax(config.paths.page.order, function (obj) {
+											config.treeController.refresh(leaf.parent, function () {
+												$.each(leaf.parent.items, function (index, item) {
+													if (item.name === leaf.name) {
+														config.treeController.focus(item);
+														return false;
+													}
+												});
+											}, true);
+										}, {
+											data : {
+												leaf : JSON.stringify(config.treeController.getPath(leaf.parent)),
+												order : JSON.stringify(order)
+											}
+										});
+
 									} else {
 										confirm('Move here ?');
 									}
