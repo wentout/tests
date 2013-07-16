@@ -452,7 +452,6 @@ $(function () {
 						add : function () {
 							var name = prompt('Leaf name (url).', 'test');
 							var leaf = config.treeController.x.current;
-							var haveItem = false;
 							if (leaf.children[name]) {
 								// todo: maybe to add() to leaf parent in this situation?
 								alert('There already is leaf with such name');

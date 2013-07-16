@@ -37,6 +37,7 @@
 	
 	$options = read_options($root);
 	$perm_folder = $options['perm_folder'];
+	// echo $perm_folder;
 	$perm_files = $options['perm_files'];
 	
 	$pages_path = $root.$options['pages_path'];
