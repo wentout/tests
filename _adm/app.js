@@ -25,7 +25,8 @@ $(function () {
 				focus : './api/page/getfocus',
 				blur : './api/page/blur/',
 				order : './api/page/order/',
-				rename : './api/page/rename/'
+				rename : './api/page/rename/',
+				move : './api/page/move/'
 			}
 		},
 		links : {
@@ -156,8 +157,8 @@ $(function () {
 		}, 10);
 	};
 
+	var enableFocusHandler = true;
 	var treeConfig = {
-		focusParentOnClose : true,
 		init : {
 			method : 'slideDown',
 			auto : false
@@ -177,20 +178,22 @@ $(function () {
 		},
 		handlers : {
 			focus : function (leaf, controller) {
-				if (leaf.parent) {
-					var path = controller.getPath(leaf);
-					ajax(config.paths.page.get, function (data) {
-						parsePageModel(data);
-					}, {
-						data : {
-							leaf : JSON.stringify(path)
-						}
-					});
-				} else {
-					pageDigest();
-					ajax(config.paths.page.blur, null, {
-						method : 'GET'
-					});
+				if (enableFocusHandler) {
+					if (leaf.parent) {
+						var path = controller.getPath(leaf);
+						ajax(config.paths.page.get, function (data) {
+							parsePageModel(data);
+						}, {
+							data : {
+								leaf : JSON.stringify(path)
+							}
+						});
+					} else {
+						pageDigest();
+						ajax(config.paths.page.blur, null, {
+							method : 'GET'
+						});
+					}
 				}
 			},
 			blur : function (leaf) {
@@ -213,7 +216,7 @@ $(function () {
 					leaf.parent.els.children.sortable('destroy');
 				}
 			},
-			added : function (leaf, controller) {
+			added : function (leaf, controller, tree) {
 				if ($.fn.draggable && $.fn.droppable && $.fn.sortable) {
 
 					if (leaf.parent.items.length > 1) {
@@ -263,71 +266,95 @@ $(function () {
 					.prop('dropped', null)
 					.draggable({
 						addClasses : false,
-						revert : true,
+						// revert : true,
 						distance : 11,
 						zIndex : 100,
 						start : function () {
 							// config.treeController.blur();
 							// config.treeController.focus(leaf);
-							leaf.els.text.prop('dropped', true);
+							leaf.els.text.prop('dropped', tree);
 						},
 						stop : function () {
 							var dropped = leaf.els.text.prop('dropped');
+							var revert = false;
 							if (dropped) {
-								if (leaf.parent == dropped) {
-									confirm('Move up ?');
-								} else {
-									if (leaf.parent == dropped.parent) {
-
-										var children = leaf.parent.els.children.children();
-
-										var order = [];
-										var was = false;
-										$.each(children, function (index, item) {
-											if (item.leaf.name !== leaf.name) {
-												if (item.leaf.name == dropped.name) {
-													if (was) {
-														order.push(dropped.name);
-														order.push(leaf.name);
-													} else {
-														order.push(leaf.name);
-														order.push(dropped.name);
-													}
-												} else {
-													order.push(item.leaf.name);
-												}
+								if (dropped.open || (dropped.parent == null)) {
+									var persist = false;
+									var make = true;
+									var parent = dropped.parent;
+									while (make) {
+										if (parent == null) {
+											make = false;
+										} else {
+											if (parent == leaf) {
+												persist = true;
+												make = false;
 											} else {
-												was = true;
+												parent = parent.parent;
 											}
-										});
-										ajax(config.paths.page.order, function (obj) {
-											config.treeController.refresh(leaf.parent, function () {
-												$.each(leaf.parent.items, function (index, item) {
-													if (item.name === leaf.name) {
-														config.treeController.focus(item);
-														return false;
-													}
-												});
-											}, true);
-										}, {
-											data : {
-												leaf : JSON.stringify(config.treeController.getPath(leaf.parent)),
-												order : JSON.stringify(order)
-											}
-										});
-
-									} else {
-										confirm('Move here ?');
+										}
 									}
+
+									if (persist) {
+										alert('Can\'t move parent to child!');
+										revert = true;
+									} else {
+										if (dropped.children[leaf.name]) {
+											if (dropped.parent) {
+												alert('There already is leaf with such a name!');
+											} else {
+												if (leaf.parent) {
+													alert('There already is leaf with such a name!');
+												} else {
+													alert('Funny, You made nothing...');
+												}
+											}
+											revert = true;
+										} else {
+											var path = config.treeController.getPath(leaf);
+											var droppedPath = config.treeController.getPath(dropped);
+											// config.treeController.blur(function () {
+											enableFocusHandler = false;
+											ajax(config.paths.page.move, function (data) {
+												if (data.success) {
+													config.pageScope.refresh(leaf.parent, function () {
+														config.pageScope.refresh(dropped, function () {
+															if (dropped.children[leaf.name]) {
+																config.treeController.focus(dropped.children[leaf.name], function () {
+																	enableFocusHandler = true;
+																});
+															}
+														}, true);
+													});
+												} else {
+													config.pageScope.refresh(leaf.parent, function () {
+														config.treeController.focus(leaf);
+														enableFocusHandler = true;
+													});
+												}
+											}, {
+												data : {
+													move : JSON.stringify(path),
+													leaf : JSON.stringify(droppedPath)
+												}
+											});
+											// });
+
+										}
+									}
+								} else {
+									alert('Can\'t move to closed leaf!');
+									revert = true;
+
 								}
 								leaf.els.text.prop('dropped', null);
-							} else {
-								confirm('Move to root ?');
 							}
-							// leaf.els.text.animate({
-							// top : 0,
-							// left : 0
-							// }, 200);
+							if (revert) {
+								leaf.els.text.animate({
+									top : 0,
+									left : 0
+								}, 200);
+							}
 						}
 					})
 					.droppable({

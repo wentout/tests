@@ -8,7 +8,8 @@
 			while (($entry = readdir($dh)) !== false) {
 				if( $entry != "." && $entry != ".." ) {
 					if( is_dir( $page_path.$entry ) ) {
-						$arr[$entry] = array(
+						$fname = basename($page_path.'/'.$entry);
+						$arr[$fname] = array(
 							'folder' => false
 						);
 						if ($handleF = opendir($page_path.'/'.$entry)) {
@@ -16,12 +17,12 @@
 								if( $entryF != "." && $entryF != ".." ){
 									
 									if( is_dir( $page_path.'/'.$entry.'/'.$entryF ) ) {
-										$arr[$entry]['folder'] = true;
+										$arr[$fname]['folder'] = true;
 										
 										$state_path = $page_path.$entry.'/open.txt';
-										$arr[$entry]['state'] = $state_path;
+										$arr[$fname]['state'] = $state_path;
 										if(file_exists($state_path)){
-											$arr[$entry]['open'] = true;
+											$arr[$fname]['open'] = true;
 										}
 										
 										break;
