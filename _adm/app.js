@@ -282,14 +282,22 @@ $(function () {
 										var children = leaf.parent.els.children.children();
 
 										var order = [];
+										var was = false;
 										$.each(children, function (index, item) {
 											if (item.leaf.name !== leaf.name) {
 												if (item.leaf.name == dropped.name) {
-													order.push(leaf.name);
-													order.push(dropped.name);
+													if (was) {
+														order.push(dropped.name);
+														order.push(leaf.name);
+													} else {
+														order.push(leaf.name);
+														order.push(dropped.name);
+													}
 												} else {
 													order.push(item.leaf.name);
 												}
+											} else {
+												was = true;
 											}
 										});
 										ajax(config.paths.page.order, function (obj) {

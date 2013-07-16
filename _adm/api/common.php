@@ -3,7 +3,8 @@
 	// @setlocale(LC_ALL, '');
 	// @mb_internal_encoding("UTF-8");
 
-	$root = $_SERVER['DOCUMENT_ROOT'];
+	// $root = $_SERVER['DOCUMENT_ROOT'];
+	$root = dirname(dirname(dirname(__FILE__))).'/';
 	
 	function _remove($rempath){
 		if (!is_dir($rempath)) {
@@ -26,6 +27,7 @@
 
 	function read_options($root) {
 		$settings_path = $root.'_adm/options/options.json';
+		// echo $settings_path;
 		$str = file_get_contents($settings_path);
 		$dt = get_object_vars(json_decode($str));
 		$dt['perm_files'] = intval($dt['perm_files'], 8);
