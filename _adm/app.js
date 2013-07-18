@@ -45,6 +45,7 @@ $(function () {
 		},
 		pageScope : null,
 		treeController : null,
+		pageEditor : null,
 		props : {
 			pageBorder : 'PageController_PageBorder',
 			activeTab : 'PageController_ActiveTab'
@@ -137,12 +138,15 @@ $(function () {
 			if ($scope.$$childTail && $scope.$$childTail.model) {
 				$scope.$$childTail.model = obj;
 			}
-			pageDigest();
+			pageDigest(function () {
+				var val = config.pageScope.model.page;
+				config.pageEditor.setValue(val, -1);
+			});
 		}
 	};
 
 	var pageDigestCounter = 0;
-	var pageDigest = function () {
+	var pageDigest = function (callback) {
 		pageDigestCounter++;
 		var buffer = 0 + pageDigestCounter;
 		window.setTimeout(function () {
@@ -150,6 +154,7 @@ $(function () {
 				pageDigestCounter = 0;
 				try {
 					config.pageScope.$digest();
+					callback && callback();
 				} catch (e) {
 					debugger;
 				}
@@ -574,7 +579,7 @@ $(function () {
 							leaf = leaf || config.treeController.x.current;
 							config.treeController.refresh(leaf, callback, open);
 						},
-						save : function (path, callback) {
+						save : function (path, callback, modelOpts) {
 							if (!path) {
 								path = config.treeController.getPath(config.treeController.x.current);
 							}
@@ -582,11 +587,34 @@ $(function () {
 								var page = '';
 								var model = $.extend(true, {}, config.blank_page);
 								var model = $.extend(true, model, ($scope.$$childTail ? $scope.$$childTail.model : $scope.model));
-								var page = '' + model.page;
+								// var page = '' + model.page;
+								var page = '' + config.pageEditor.getValue();
+
 								delete model.page;
+
+								var cursorPosition = config.pageEditor.getCursorPosition();
+								var session = config.pageEditor.getSession();
+								var scrTop = session.getScrollTop();
+
+								modelOpts && ($.extend(true, model, modelOpts));
+
 								ajax(config.paths.page.set, function (data) {
 									parsePageModel(data);
 									callback && callback();
+
+									window.setTimeout(function () {
+										// $('.ace_editor .ace_sb').scrollTop(scrTop);
+										var session = config.pageEditor.getSession();
+										session.setScrollTop(scrTop);
+
+										// var at = ls.get(config.props.activeTab);
+										// if (at == 'page_head') {
+											// config.pageEditor.focus();
+										// }
+										config.pageEditor.moveCursorToPosition(cursorPosition);
+
+									}, 50);
+
 								}, {
 									data : {
 										model : jData(model),
@@ -638,6 +666,14 @@ $(function () {
 					ajax(config.paths.page.focus, function (data) {
 						treeConfig.init.focus = data;
 					});
+
+					var ed = $('#page_html_editor').width('97%').height(currentHeight(true, 120)).css({
+							border : '1px solid black'
+						});
+
+					var editor = ace.edit("page_html_editor");
+					editor.session.setMode('ace/mode/html');
+					config.pageEditor = editor;
 
 					var tree_content = $('#tree_content');
 					config.treeController = tree_content.customTree(treeConfig);
