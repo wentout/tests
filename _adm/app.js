@@ -325,9 +325,8 @@ $(function () {
 													config.pageScope.refresh(leaf.parent, function () {
 														config.pageScope.refresh(dropped, function () {
 															if (dropped.children[leaf.name]) {
-																config.treeController.focus(dropped.children[leaf.name], function () {
-																	enableFocusHandler = true;
-																});
+																enableFocusHandler = true;
+																config.treeController.focus(dropped.children[leaf.name], function () {});
 															}
 														}, true);
 													});
@@ -341,6 +340,9 @@ $(function () {
 												data : {
 													move : JSON.stringify(path),
 													leaf : JSON.stringify(droppedPath)
+												},
+												error : function () {
+													enableFocusHandler = true;
 												}
 											});
 											// });
@@ -424,7 +426,7 @@ $(function () {
 					$routeProvider
 					.when('/main', {
 						templateUrl : 'parts/main.html',
-						controller : 'MainTabCtrl'
+						controller : 'MainTabCtrl.js'
 					})
 					.when('/pages', {
 						templateUrl : 'parts/pages.html',
@@ -471,13 +473,15 @@ $(function () {
 				}
 			])
 
-		.controller('MainTabCtrl', ['$scope', function ($scope) {}
-			])
 
-		.controller('PagesCtrl', ['$scope', '$location', function ($scope, $location) {
+		.service('pageModel', [function () {
+					return $.extend(true, {}, config.blank_page);
+				}
+			])
+		.controller('PagesCtrl', ['$scope', '$location', 'pageModel', function ($scope, $location, pageModel) {
 					$.extend(true, $scope, {
 						i18n : config.locale.page,
-						model : $.extend(true, {}, config.blank_page),
+						model : pageModel,
 						treeIsHidden : false,
 						$location : $location,
 						tabs : $.extend(true, {}, config.links.page),
@@ -609,7 +613,7 @@ $(function () {
 
 										// var at = ls.get(config.props.activeTab);
 										// if (at == 'page_head') {
-											// config.pageEditor.focus();
+										// config.pageEditor.focus();
 										// }
 										config.pageEditor.moveCursorToPosition(cursorPosition);
 
