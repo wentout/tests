@@ -1,3 +1,5 @@
 Why controllers are always called TWICE.
 How to fix new model to $scope.
 How to get current model state from $scope.
+
+asdf
