@@ -194,16 +194,15 @@ $(function () {
 							}
 						});
 					} else {
-						pageDigest();
-						ajax(config.paths.page.blur, null, {
+						ajax(config.paths.page.blur, function () {
+							parsePageModel();
+						}, {
 							method : 'GET'
 						});
 					}
 				}
 			},
-			blur : function (leaf) {
-				parsePageModel();
-			},
+			blur : function (leaf) {},
 			open : function () {
 				pageDigest();
 			},
@@ -472,7 +471,6 @@ $(function () {
 					setSizes();
 				}
 			])
-
 
 		.service('pageModel', [function () {
 					return $.extend(true, {}, config.blank_page);
