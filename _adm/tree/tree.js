@@ -411,7 +411,8 @@
 					}, value);
 
 				el.parent = leaf;
-				el.name = name;
+				el.name = value.name || name;
+				el.value = $.extend(true, {}, value);
 
 				var text = el.text || name;
 				if (x.labelsBreak.by) {

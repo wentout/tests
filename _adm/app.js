@@ -187,6 +187,7 @@ $(function () {
 					if (leaf.parent) {
 						var path = controller.getPath(leaf);
 						ajax(config.paths.page.get, function (data) {
+							// parsePageModel($.extend(true, config.blank_page, data));
 							parsePageModel(data);
 						}, {
 							data : {
