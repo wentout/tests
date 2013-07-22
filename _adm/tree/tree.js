@@ -155,9 +155,9 @@
 			return true;
 		};
 
-		var loader = function (path, callback) {
+		var loader = function (path, callback, leaf) {
 			if ($.isFunction(x.loader)) {
-				x.loader(path, callback);
+				x.loader(path, callback, leaf);
 			} else {
 				log(UNDEFINED_LOADER);
 			}
@@ -171,7 +171,7 @@
 					x.cls.loader && (leaf.els.status.removeClass(x.cls.loader));
 					callback && callback(leaf, tree, controller);
 				});
-			});
+			}, leaf);
 		};
 
 		var getPath = function (leaf) {
