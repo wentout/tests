@@ -126,7 +126,7 @@ $(function () {
 
 	var parsePageModel = function (data, obj) {
 		if (!obj) {
-			var obj = config.blank_page;
+			var obj = $.extend(true, {}, config.blank_page);
 			if (data) {
 				obj = JSON.parse(data.model);
 				obj.page = data.page;
@@ -426,7 +426,7 @@ $(function () {
 					$routeProvider
 					.when('/main', {
 						templateUrl : 'parts/main.html',
-						controller : 'MainTabCtrl.js'
+						controller : 'MainTabCtrl'
 					})
 					.when('/pages', {
 						templateUrl : 'parts/pages.html',
@@ -473,10 +473,14 @@ $(function () {
 				}
 			])
 
+		.controller('MainTabCtrl', ['$scope', function ($scope) {}
+			])
+
 		.service('pageModel', [function () {
 					return $.extend(true, {}, config.blank_page);
 				}
 			])
+
 		.controller('PagesCtrl', ['$scope', '$location', 'pageModel', function ($scope, $location, pageModel) {
 					$.extend(true, $scope, {
 						i18n : config.locale.page,
