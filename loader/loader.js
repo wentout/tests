@@ -19,6 +19,8 @@
 
 		var retObj = null;
 
+		// var conf = $.extend(true, {}, config);
+
 		var jx = {
 			type : 'GET',
 			dataType : 'text',
@@ -27,13 +29,17 @@
 
 					var obj = undefined;
 
+					var extend = true;
+
 					if (json) {
 						obj = data;
 					} else {
-						var fn = new Function(' return ' + data);
 						if (data.indexOf('function') == 0) {
+							var fn = new Function(' return ' + data);
 							obj = fn();
 						} else {
+							extend = false;
+							var fn = new Function(' var scope = this; return ' + data);
 							obj = ca(fn, scope);
 						}
 					}
@@ -42,7 +48,7 @@
 						if ($.isFunction(obj)) {
 							obj = ca(obj, scope);
 						} else {
-							if(!$.isArray(obj)){
+							if (!$.isArray(obj) && extend) {
 								obj = $.extend(true, scope, obj);
 							}
 						}
@@ -81,7 +87,14 @@
 		if (typeof url === 'string') {
 			jx.url = url;
 		} else {
+
+			// if (url.loaderCfg) {
+			// conf = $.extend(true, conf, url.loaderCfg);
+			// delete url.loaderCfg;
+			// }
+
 			$.extend(true, jx, url);
+
 		}
 
 		$.ajax(jx);
