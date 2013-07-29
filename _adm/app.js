@@ -1,5 +1,10 @@
 $(function () {
 
+	var loader = $.loadSubScript;
+	var syncJSONLoader = function (src) {
+		return loader(src, null, null, false, true);
+	};
+
 	var config = {
 		locale : {
 			name : 'en-en',
@@ -98,13 +103,7 @@ $(function () {
 		$.ajax(obj);
 	};
 
-	ajax(config.paths.locale(), function (obj) {
-		try {
-			$.extend(true, config.locale, obj);
-		} catch (e) {
-			info(e.stack || e, true);
-		}
-	});
+	config.locale = syncJSONLoader(config.paths.locale());
 
 	var currentHeight = function (asString, minus) {
 		!minus && (minus = 0);
@@ -415,66 +414,38 @@ $(function () {
 
 	var magnet = null;
 
+	var modules = (function () {
+		var cache = {};
+		var ld = function (name, scope, callback) {
+			var src = './modules/' + name + '.js';
+			var obj = loader(src, scope || config, callback || null, false);
+			cache[name] = obj;
+			return obj;
+		};
+		return function (name, scope, callback, reload) {
+			if (cache[name] && (!reload)) {
+				return cache[name];
+			}
+			return ld(name, scope, callback);
+		};
+	})();
+
+	var hbm = modules('headCtrl', {
+			config : config,
+			setSizes : setSizes
+		});
+		debugger;
+
 	var app = angular.module('fineCutAdm', [])
 
 		.config(['$locationProvider', function ($locationProvider) {
 					$locationProvider.hashPrefix('!');
 				}
 			])
-
-		.config(['$routeProvider', function ($routeProvider) {
-					$routeProvider
-					.when('/main', {
-						templateUrl : 'parts/main.html',
-						controller : 'MainTabCtrl'
-					})
-					.when('/pages', {
-						templateUrl : 'parts/pages.html',
-						controller : 'PagesCtrl'
-					})
-					.when('/templates', {
-						templateUrl : './parts/templates.html',
-						controller : 'TemplatesCtrl'
-					})
-					.when('/files', {
-						templateUrl : './parts/files.html',
-						controller : 'FilesCtrl'
-					})
-					.when('/settings', {
-						templateUrl : './parts/settings.html',
-						controller : 'SettingsCtrl'
-					})
-					.otherwise({
-						redirectTo : '/main'
-					});
-				}
-			])
-
-		.controller('HeadCtrl', ['$scope', function ($scope) {
-					$.extend(true, $scope, config.locale.head);
-				}
-			])
-
-		.controller('BodyCtrl', ['$scope', '$location', function ($scope, $location, $locationProvider) {
-					$.extend(true, $scope, {
-						i18n : config.locale.body,
-						tabs : config.links.main,
-						$location : $location,
-						activeTab : function () {
-							var path = $location.path();
-							if (path == '/' + this.tab) {
-								return 'active';
-							} else {
-								return '';
-							}
-						}
-					});
-					setSizes();
-				}
-			])
-
-		.controller('MainTabCtrl', ['$scope', function ($scope) {}
-			])
+		.config(modules('routes'))
+		.controller('HeadCtrl', hbm.h)
+		.controller('BodyCtrl', hbm.b)
+		.controller('MainTabCtrl', hbm.m)
 
 		.service('pageModel', [function () {
 					return $.extend(true, {}, config.blank_page);
